@@ -216,6 +216,14 @@ document.addEventListener('DOMContentLoaded', () => {
       tension: 0.2
     }));
 
+    // Corte transversal en t = 1.25 ms (puntos discretos de la v.a. X(t_0))
+    const cutData = sim.t_ms.map((tVal, idx) => {
+      if (idx === sim.cutIdx) {
+        return sim.cutValues[0];
+      }
+      return null;
+    });
+
     state.charts['exp1'] = new Chart(ctx, {
       type: 'line',
       data: {
@@ -231,42 +239,42 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function initChartExp2() {
-    const ctx = document.getElementById('chart-exp2');
-    if (!ctx || state.charts['exp2']) return;
+  function initChartExp2Mean() {
+    const ctx = document.getElementById('chart-exp2-mean');
+    if (!ctx || state.charts['exp2_mean']) return;
 
     const data100 = StochasticSim.getMeanAndVariance(100);
     const data1000 = StochasticSim.getMeanAndVariance(1000);
     const data10000 = StochasticSim.getMeanAndVariance(10000);
 
-    state.charts['exp2'] = new Chart(ctx, {
+    state.charts['exp2_mean'] = new Chart(ctx, {
       type: 'line',
       data: {
         labels: data10000.t_ms,
         datasets: [
           {
-            label: 'Media M = 100',
+            label: 'Estimación M = 100',
             data: data100.mean,
             borderColor: '#fbbf24',
             borderWidth: 1.2,
             pointRadius: 0
           },
           {
-            label: 'Media M = 1,000',
+            label: 'Estimación M = 1,000',
             data: data1000.mean,
             borderColor: '#34d399',
             borderWidth: 1.3,
             pointRadius: 0
           },
           {
-            label: 'Media M = 10,000',
+            label: 'Estimación M = 10,000',
             data: data10000.mean,
             borderColor: '#00f5a0',
             borderWidth: 1.8,
             pointRadius: 0
           },
           {
-            label: 'Teoría μ_X = 0 V',
+            label: 'Valor Teórico μ_X = 0 V',
             data: Array(data10000.t_ms.length).fill(0),
             borderColor: '#ffffff',
             borderWidth: 1.5,
@@ -276,15 +284,71 @@ document.addEventListener('DOMContentLoaded', () => {
         ]
       },
       options: getDarkChartOptions(
-        'Evaluación WSS de 1er Orden: Media de Conjunto μ̂_X(t) vs Tiempo',
+        'Subplot 1: Media de Conjunto μ̂_X(t) vs Tiempo [Invarianza de 1er Orden]',
         'Tiempo t [ms]',
         'Media μ_X [V]'
       )
     });
   }
 
+  function initChartExp2Var() {
+    const ctx = document.getElementById('chart-exp2-var');
+    if (!ctx || state.charts['exp2_var']) return;
+
+    const data100 = StochasticSim.getMeanAndVariance(100);
+    const data1000 = StochasticSim.getMeanAndVariance(1000);
+    const data10000 = StochasticSim.getMeanAndVariance(10000);
+
+    state.charts['exp2_var'] = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: data10000.t_ms,
+        datasets: [
+          {
+            label: 'Estimación M = 100',
+            data: data100.variance,
+            borderColor: '#fbbf24',
+            borderWidth: 1.2,
+            pointRadius: 0
+          },
+          {
+            label: 'Estimación M = 1,000',
+            data: data1000.variance,
+            borderColor: '#34d399',
+            borderWidth: 1.3,
+            pointRadius: 0
+          },
+          {
+            label: 'Estimación M = 10,000',
+            data: data10000.variance,
+            borderColor: '#00f5a0',
+            borderWidth: 1.8,
+            pointRadius: 0
+          },
+          {
+            label: 'Valor Teórico A²/2 = 2.0 W',
+            data: Array(data10000.t_ms.length).fill(2.0),
+            borderColor: '#ffffff',
+            borderWidth: 1.5,
+            borderDash: [5, 5],
+            pointRadius: 0
+          }
+        ]
+      },
+      options: getDarkChartOptions(
+        'Subplot 2: Varianza de Conjunto σ̂_X²(t) vs Tiempo [Invarianza de 2do Orden]',
+        'Tiempo t [ms]',
+        'Varianza σ_X² [W]'
+      )
+    });
+  }
+
+  function initChartExp2() {
+    initChartExp2Mean();
+  }
+
   function initChartExp3() {
-    // 1. Corte 1D en Chart.js
+    // 1. Corte 1D en Chart.js (Compara Teoria, M=100, M=1000, M=10000 como en MATLAB)
     const ctx = document.getElementById('chart-exp3-1d');
     if (ctx && !state.charts['exp3_1d']) {
       const data = StochasticSim.getAutocorrelationData(1000);
@@ -297,7 +361,23 @@ document.addEventListener('DOMContentLoaded', () => {
               label: 'Teoría: (A²/2) cos(2π f₀ τ)',
               data: data.R_theory,
               borderColor: '#ffffff',
-              borderWidth: 2,
+              borderWidth: 2.2,
+              pointRadius: 0
+            },
+            {
+              label: 'Simulación M = 100',
+              data: data.R_sim_100,
+              borderColor: '#fbbf24',
+              borderWidth: 1.2,
+              borderDash: [2, 2],
+              pointRadius: 0
+            },
+            {
+              label: 'Simulación M = 1,000',
+              data: data.R_sim_1000,
+              borderColor: '#34d399',
+              borderWidth: 1.3,
+              borderDash: [4, 4],
               pointRadius: 0
             },
             {
@@ -305,20 +385,19 @@ document.addEventListener('DOMContentLoaded', () => {
               data: data.R_sim,
               borderColor: '#00f5a0',
               borderWidth: 1.8,
-              borderDash: [3, 3],
               pointRadius: 0
             }
           ]
         },
         options: getDarkChartOptions(
-          'Corte Unidimensional R_X(τ) vs Retardo Temporal',
+          'Corte Unidimensional R_X(τ) vs Retardo Temporal [Subplot 2 MATLAB]',
           'Retardo temporal τ [ms]',
           'Autocorrelación [W]'
         )
       });
     }
 
-    // 2. Matriz 2D Heatmap en Plotly
+    // 2. Matriz 2D Heatmap en Plotly con paleta Jet (idéntica a MATLAB)
     const plotlyContainer = document.getElementById('plotly-exp3-2d');
     if (plotlyContainer && typeof Plotly !== 'undefined' && !state.plotlyRendered['exp3_2d']) {
       const data = StochasticSim.getAutocorrelationData(500);
@@ -327,7 +406,7 @@ document.addEventListener('DOMContentLoaded', () => {
         x: data.t_ms,
         y: data.t_ms,
         type: 'heatmap',
-        colorscale: 'Viridis',
+        colorscale: 'Jet',
         colorbar: {
           title: 'R(t1, t2)',
           titleside: 'right',
@@ -338,7 +417,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const layout = {
         title: {
-          text: 'Matriz Bidimensional R_X(t₁, t₂) [Toeplitz]',
+          text: 'Matriz Bidimensional R_X(t₁, t₂) [Toeplitz - Subplot 1 MATLAB]',
           font: { color: '#f8fafc', size: 11 }
         },
         paper_bgcolor: 'transparent',
@@ -570,34 +649,39 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!ctx || state.charts['exp6']) return;
 
     const data = StochasticSim.getMonteCarloConvergenceData();
+    const maePoints = data.M_vals.map((m, i) => ({ x: m, y: data.mae_mu[i] }));
+    const rmsePoints = data.M_vals.map((m, i) => ({ x: m, y: data.rmse_R[i] }));
+    const tlcPoints = data.M_vals.map((m, i) => ({ x: m, y: data.tlc_slope[i] }));
+
     state.charts['exp6'] = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: data.M_vals.map(String),
         datasets: [
           {
-            label: 'MAE Media μ̂_X(t)',
-            data: data.mae_mu,
+            label: 'Error Absoluto Medio μ̂_X(t)',
+            data: maePoints,
             borderColor: '#fbbf24',
             backgroundColor: '#fbbf24',
-            borderWidth: 1.8,
-            pointRadius: 3.5,
-            tension: 0.1
+            borderWidth: 2,
+            pointRadius: 4.5,
+            pointHoverRadius: 6.5,
+            tension: 0
           },
           {
             label: 'RMSE Autocorrelación R̂_X(τ)',
-            data: data.rmse_R,
+            data: rmsePoints,
             borderColor: '#00f5a0',
             backgroundColor: '#00f5a0',
-            borderWidth: 1.8,
-            pointRadius: 3.5,
-            tension: 0.1
+            borderWidth: 2,
+            pointRadius: 4.5,
+            pointHoverRadius: 6.5,
+            tension: 0
           },
           {
-            label: 'Tasa TLC Teórica O(1/√M)',
-            data: data.tlc_slope,
+            label: 'Tasa Asintótica TLC O(1/√M)',
+            data: tlcPoints,
             borderColor: '#ffffff',
-            borderWidth: 1.5,
+            borderWidth: 1.8,
             borderDash: [5, 5],
             pointRadius: 0
           }
@@ -605,21 +689,44 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       options: {
         ...getDarkChartOptions(
-          'Convergencia Monte Carlo y Teorema del Límite Central (TLC)',
-          'Número de Realizaciones M',
-          'Error Numérico Cuantitativo'
+          'Convergencia Monte Carlo y Teorema del Límite Central [Escala Log-Log]',
+          'Número de Realizaciones M (Escala Logarítmica)',
+          'Error Cuantitativo (Escala Logarítmica)'
         ),
         scales: {
           x: {
-            type: 'category',
-            title: { display: true, text: 'Realizaciones M', color: '#94a3b8' },
+            type: 'logarithmic',
+            min: 40,
+            max: 15000,
+            title: { display: true, text: 'Número de Realizaciones M (Escala Logarítmica)', color: '#94a3b8' },
             grid: { color: 'rgba(148, 163, 184, 0.08)' },
-            ticks: { color: '#64748b' }
+            ticks: {
+              callback: function(value) {
+                const num = Number(value);
+                if ([50, 100, 200, 500, 1000, 2000, 5000, 10000].includes(num)) {
+                  return num >= 1000 ? (num / 1000) + 'k' : String(num);
+                }
+                return null;
+              },
+              color: '#94a3b8'
+            }
           },
           y: {
-            title: { display: true, text: 'Magnitud del Error', color: '#94a3b8' },
+            type: 'logarithmic',
+            min: 0.001,
+            max: 0.3,
+            title: { display: true, text: 'Error Cuantitativo (Escala Logarítmica)', color: '#94a3b8' },
             grid: { color: 'rgba(148, 163, 184, 0.08)' },
-            ticks: { color: '#64748b' }
+            ticks: {
+              callback: function(value) {
+                const num = Number(value);
+                if (num === 0.001 || num === 0.005 || num === 0.01 || num === 0.05 || num === 0.1 || num === 0.2) {
+                  return String(num);
+                }
+                return null;
+              },
+              color: '#94a3b8'
+            }
           }
         }
       }
@@ -739,8 +846,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function setupChartTabSwitchers() {
     const boxes = document.querySelectorAll('.chart-viewer-box');
     boxes.forEach(box => {
-      // Ignorar caja de exp5 para manejo especializado con 4 subplots
-      if (box.querySelector('#tabs-exp5')) return;
+      // Ignorar cajas de exp2 y exp5 para manejo especializado
+      if (box.querySelector('#tabs-exp2') || box.querySelector('#tabs-exp5')) return;
 
       const tabInteractive = box.querySelector('.chart-tab-interactive');
       const tabHeatmap = box.querySelector('.chart-tab-heatmap');
@@ -809,6 +916,47 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+    // Manejo especializado para Experimento 2 (Media vs Varianza + MATLAB 300 DPI)
+    const tabsExp2 = document.getElementById('tabs-exp2');
+    if (tabsExp2) {
+      const exp2Buttons = tabsExp2.querySelectorAll('button[data-exp2-tab]');
+      const canvasMean = document.getElementById('chart-exp2-mean');
+      const canvasVar = document.getElementById('chart-exp2-var');
+      const viewerBox = tabsExp2.closest('.chart-viewer-box');
+      const imgMatlab = viewerBox ? viewerBox.querySelector('.matlab-img-view') : null;
+      const zoomHint = viewerBox ? viewerBox.querySelector('.matlab-zoom-hint') : null;
+
+      exp2Buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          exp2Buttons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          const tabType = btn.getAttribute('data-exp2-tab');
+          if (canvasMean) canvasMean.style.display = (tabType === 'mean') ? 'block' : 'none';
+          if (canvasVar) canvasVar.style.display = (tabType === 'var') ? 'block' : 'none';
+          if (imgMatlab) imgMatlab.style.display = (tabType === 'matlab') ? 'block' : 'none';
+          if (zoomHint) zoomHint.style.display = (tabType === 'matlab') ? 'block' : 'none';
+
+          if (tabType === 'mean') initChartExp2Mean();
+          if (tabType === 'var') initChartExp2Var();
+        });
+      });
+
+      const btnRunExp2 = document.getElementById('btn-run-exp2');
+      if (btnRunExp2) {
+        btnRunExp2.addEventListener('click', () => {
+          btnRunExp2.innerHTML = '⏳ Calculando...';
+          btnRunExp2.style.opacity = '0.7';
+          setTimeout(() => {
+            btnRunExp2.innerHTML = '▶ Ejecutar Simulación';
+            btnRunExp2.style.opacity = '1';
+            if (state.charts['exp2_mean']) state.charts['exp2_mean'].update();
+            if (state.charts['exp2_var']) state.charts['exp2_var'].update();
+          }, 350);
+        });
+      }
+    }
+
     // Manejo especializado para Experimento 5 (4 subplots interactivos + MATLAB 300 DPI)
     const tabsExp5 = document.getElementById('tabs-exp5');
     if (tabsExp5) {
@@ -875,11 +1023,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dom.lightboxDownload) {
       dom.lightboxDownload.href = src;
     }
-    dom.lightboxModal.classList.add('open');
+    dom.lightboxModal.classList.add('active', 'open');
   }
 
   function closeLightbox() {
-    if (dom.lightboxModal) dom.lightboxModal.classList.remove('open');
+    if (dom.lightboxModal) {
+      dom.lightboxModal.classList.remove('active', 'open');
+    }
   }
 
   function setupLightboxEvents() {
@@ -888,12 +1038,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const img = area.querySelector('.matlab-img-view');
       const hint = area.querySelector('.matlab-zoom-hint');
       if (img) {
-        img.addEventListener('click', () => {
+        img.style.cursor = 'zoom-in';
+        img.addEventListener('click', (e) => {
+          e.stopPropagation();
           openLightbox(img.src, img.alt);
         });
       }
       if (hint && img) {
-        hint.addEventListener('click', () => {
+        hint.style.cursor = 'pointer';
+        hint.style.pointerEvents = 'auto';
+        hint.addEventListener('click', (e) => {
+          e.stopPropagation();
           openLightbox(img.src, img.alt);
         });
       }
@@ -903,10 +1058,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dom.lightboxClose) {
       dom.lightboxClose.addEventListener('click', closeLightbox);
     }
+    const backdrop = document.getElementById('lightbox-backdrop');
+    if (backdrop) {
+      backdrop.addEventListener('click', closeLightbox);
+    }
     if (dom.lightboxModal) {
       dom.lightboxModal.addEventListener('click', (e) => {
         // Cerrar si hace clic en el fondo oscuro fuera del cuadro blanco/oscuro
-        if (e.target === dom.lightboxModal) {
+        if (e.target === dom.lightboxModal || e.target.classList.contains('lightbox-backdrop')) {
           closeLightbox();
         }
       });

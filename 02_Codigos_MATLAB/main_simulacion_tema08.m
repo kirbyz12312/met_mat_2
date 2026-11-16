@@ -212,8 +212,8 @@ plot(lags_temp(lags_temp >= 0) * 1e3, R_temp(lags_temp >= 0), 'r-.', 'LineWidth'
      'DisplayName', 'Promedio Temporal \mathcal{R}_x(\tau) [1 sola trayectoria, T = 1.0 s]');
 xlabel('Retardo temporal \tau [ms]', 'FontWeight', 'bold');
 ylabel('Autocorrelacion [W]', 'FontWeight', 'bold');
-title('Verificacion de Ergodicidad en la Autocorrelacion: \hat{R}_{ens}(\tau) \equiv \mathcal{R}_x(\tau) \equiv R_X(\tau)', ...
-      'FontSize', 11, 'FontWeight', 'bold');
+title('Verificacion de Ergodicidad en la Autocorrelacion: R_{ens}(\tau) \equiv R_x(\tau) \equiv R_X(\tau)', ...
+      'FontSize', 11, 'FontWeight', 'bold', 'Interpreter', 'tex');
 legend('Location', 'northeast', 'FontSize', 9);
 xlim([0, cfg.T_obs * 1e3]);
 ylim([-2.2, 2.2]);
@@ -265,34 +265,48 @@ xlim([0, cfg.T_obs * 1e3]);
 % FIGURA 6: Convergencia Monte Carlo y Teorema del Limite Central
 % -------------------------------------------------------------------------
 f6 = figure('Name', 'Fig6_Convergencia_Monte_Carlo', 'Color', 'w', 'Position', [200, 200, 750, 420]);
+ax6 = axes('Parent', f6);
+
 M_vector = [50, 100, 200, 500, 1000, 2000, 5000, 10000];
 rmse_convergencia = zeros(size(M_vector));
 mae_mu_convergencia = zeros(size(M_vector));
+N_trials_mc = 20; % Ensamble de corridas Monte Carlo para estimador no sesgado
 
 for idx_m = 1:length(M_vector)
     M_val = M_vector(idx_m);
-    [X_sub, ~] = generar_proceso_sinusoidal(M_val, cfg.t, cfg.A, cfg.f0, cfg.seed + idx_m * 7);
-    [mu_sub, ~, ~, R_tau_sub, ~] = estimar_estadisticas_conjunto(X_sub, cfg.t);
-    mae_mu_convergencia(idx_m) = mean(abs(mu_sub));
-    rmse_convergencia(idx_m) = sqrt(mean((R_tau_sub - R_teorica).^2));
+    mae_acc = 0;
+    rmse_acc = 0;
+    for tr = 1:N_trials_mc
+        [X_sub, ~] = generar_proceso_sinusoidal(M_val, cfg.t, cfg.A, cfg.f0, cfg.seed + idx_m * 100 + tr);
+        [mu_sub, ~, ~, R_tau_sub, ~] = estimar_estadisticas_conjunto(X_sub, cfg.t);
+        mae_acc = mae_acc + mean(abs(mu_sub));
+        rmse_acc = rmse_acc + sqrt(mean((R_tau_sub - R_teorica).^2));
+    end
+    mae_mu_convergencia(idx_m) = mae_acc / N_trials_mc;
+    rmse_convergencia(idx_m) = rmse_acc / N_trials_mc;
 end
 
-hold on; grid on; box on;
-loglog(M_vector, mae_mu_convergencia, 's-', 'LineWidth', 1.6, 'Color', [0.85, 0.33, 0.10], ...
-       'DisplayName', 'Error Absoluto Medio \mu_X(t)');
-loglog(M_vector, rmse_convergencia, 'o-', 'LineWidth', 1.6, 'Color', [0.00, 0.45, 0.74], ...
-       'DisplayName', 'RMSE Autocorrelacion R_X(\tau)');
+loglog(ax6, M_vector, mae_mu_convergencia, 's-', 'LineWidth', 1.6, 'Color', [0.85, 0.33, 0.10], ...
+       'MarkerSize', 6, 'DisplayName', 'Error Absoluto Medio \mu_X(t)');
+hold(ax6, 'on'); grid(ax6, 'on'); box(ax6, 'on');
+loglog(ax6, M_vector, rmse_convergencia, 'o-', 'LineWidth', 1.6, 'Color', [0.00, 0.45, 0.74], ...
+       'MarkerSize', 6, 'DisplayName', 'RMSE Autocorrelacion R_X(\tau)');
 
-% Pendiente teorica O(1 / sqrt(M))
-pendiente_asintotica = rmse_convergencia(1) * sqrt(M_vector(1)) ./ sqrt(M_vector);
-loglog(M_vector, pendiente_asintotica, 'k--', 'LineWidth', 1.4, ...
+% Pendiente teorica O(1 / sqrt(M)) anclada al primer punto
+pendiente_asintotica = mae_mu_convergencia(1) * sqrt(M_vector(1)) ./ sqrt(M_vector);
+loglog(ax6, M_vector, pendiente_asintotica, 'k--', 'LineWidth', 1.4, ...
        'DisplayName', 'Tasa Asintotica Teorema Limite Central O(1/\surd M)');
 
-xlabel('Numero de Realizaciones M (Escala Logaritmica)', 'FontWeight', 'bold');
-ylabel('Error Cuantitativo (Escala Logaritmica)', 'FontWeight', 'bold');
-title('Convergencia del Estimador de Monte Carlo segun la Ley de los Grandes Numeros', ...
+set(ax6, 'XScale', 'log', 'YScale', 'log');
+xlim(ax6, [40, 15000]);
+ylim(ax6, [0.001, 0.3]);
+set(ax6, 'XTick', [50, 100, 200, 500, 1000, 2000, 5000, 10000]);
+set(ax6, 'XTickLabel', {'50', '100', '200', '500', '1000', '2000', '5000', '10000'});
+xlabel(ax6, 'Numero de Realizaciones M (Escala Logaritmica)', 'FontWeight', 'bold');
+ylabel(ax6, 'Error Cuantitativo (Escala Logaritmica)', 'FontWeight', 'bold');
+title(ax6, 'Convergencia del Estimador de Monte Carlo segun la Ley de los Grandes Numeros', ...
       'FontSize', 11, 'FontWeight', 'bold');
-legend('Location', 'northeast', 'FontSize', 8.5);
+legend(ax6, 'Location', 'northeast', 'FontSize', 8.5);
 
 %% 7. Exportacion de figuras en alta resolucion y guardado de metricas
 figuras = {f1, f2, f3, f4, f5, f6};
@@ -349,11 +363,22 @@ fprintf(fid, 'CONTRAEJEMPLO NO ESTACIONARIO (Y(t) = A(1+alpha*t)cos(2*pi*f0*t + 
 fprintf(fid, '  Pendiente alpha: %.4f s^-1\n', cfg.alpha_ramp);
 fprintf(fid, '  RMSE varianza sim vs teorica: %.6f W\n', rmse_var_contraejemplo);
 fprintf(fid, '  Varianza inicial (t=0): %.6f W\n', var_Y(1));
-fprintf(fid, '  Varianza final (t=5ms): %.6f W\n', var_Y(end));
+fprintf(fid, '  Varianza final (t=5ms): %.6f W\n\n', var_Y(end));
+
+fprintf(fid, 'CONVERGENCIA MONTE CARLO Y TASA ASINTOTICA O(1/sqrt(M)):\n');
+fprintf(fid, '  M       MAE mu_X(t) [V]    RMSE R_X(tau) [W]    TLC Asintotica\n');
+for idx_m = 1:length(M_vector)
+    fprintf(fid, '  %-6d  %-18.6f %-20.6f %.6f\n', ...
+        M_vector(idx_m), mae_mu_convergencia(idx_m), rmse_convergencia(idx_m), pendiente_asintotica(idx_m));
+end
 fclose(fid);
 
-% Guardar tambien workspace .mat
-save('workspace_simulacion_tema08.mat');
+% Guardar variables numericas de interes sin objetos graficos
+save('workspace_simulacion_tema08.mat', 'cfg', 'M_vector', 'mae_mu_convergencia', ...
+     'rmse_convergencia', 'pendiente_asintotica', 'mu_100', 'mu_1000', 'mu_10000', ...
+     'var_100', 'var_1000', 'var_10000', 'R_tau_100', 'R_tau_1000', 'R_tau_10000', ...
+     'R_teorica', 'lags_tau', 'mu_temp', 'var_temp', 'R_temp', 'lags_temp', ...
+     'var_Y', 'var_Y_teorica', 'R_Y_mat');
 
 fprintf('\n>>> Simulacion completada exitosamente.\n');
 fprintf('>>> Figuras exportadas a 300 DPI en:\n    - 01_Informe_IEEE/figures/\n    - 03_Presentacion_Web/figures/\n');

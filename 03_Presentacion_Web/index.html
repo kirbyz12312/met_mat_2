@@ -845,18 +845,20 @@
               </div>
             </div>
 
-            <!-- Gráfica Interactiva -->
+            <!-- Gráfica Interactiva con Pestañas para Media y Varianza -->
             <div class="chart-viewer-box">
               <div class="chart-toolbar">
-                <div class="chart-tabs">
-                  <button class="chart-tab-btn chart-tab-interactive active">📊 Gráfico Interactivo (Chart.js)</button>
-                  <button class="chart-tab-btn chart-tab-matlab">📸 MATLAB 300 DPI Original</button>
+                <div class="chart-tabs" id="tabs-exp2">
+                  <button class="chart-tab-btn active" data-exp2-tab="mean">📊 1. Media de Conjunto μ̂(t)</button>
+                  <button class="chart-tab-btn" data-exp2-tab="var">📈 2. Varianza σ̂²(t)</button>
+                  <button class="chart-tab-btn" data-exp2-tab="matlab">📸 MATLAB 300 DPI Original</button>
                 </div>
-                <button class="btn-demo-run">▶ Ejecutar Simulación</button>
+                <button class="btn-demo-run" id="btn-run-exp2">▶ Ejecutar Simulación</button>
               </div>
-              <div class="chart-canvas-area">
-                <canvas id="chart-exp2"></canvas>
-                <img src="figures/fig2_media_y_varianza_conjunto.png" class="matlab-img-view" alt="Figura 2: Media y Varianza de Conjunto vs Tiempo">
+              <div class="chart-canvas-area" style="position: relative;">
+                <canvas id="chart-exp2-mean"></canvas>
+                <canvas id="chart-exp2-var" style="display: none;"></canvas>
+                <img src="figures/fig2_media_y_varianza_conjunto.png" class="matlab-img-view" alt="Figura 2: Media y Varianza de Conjunto vs Tiempo (2 Subplots MATLAB)" style="display: none;">
                 <span class="matlab-zoom-hint">🔍 Clic para ampliar a 300 DPI</span>
               </div>
             </div>
@@ -1221,22 +1223,19 @@
               <div class="code-snippet-box">
                 <div class="code-snippet-header">
                   <span>MATLAB: FIGURA 6 (main_simulacion_tema08.m)</span>
-                  <span>Convergencia Monte Carlo TLC</span>
+                  <span>Convergencia Monte Carlo Escala Log-Log</span>
                 </div>
                 <div class="code-snippet-body">
                   <pre><code><span class="m-comment">% FIGURA 6: Convergencia Monte Carlo y Teorema Limite Central</span>
 <span class="m-var">f6</span> = <span class="m-func">figure</span>(<span class="m-str">'Name'</span>, <span class="m-str">'Fig6_Convergencia_Monte_Carlo'</span>, <span class="m-str">'Color'</span>, <span class="m-str">'w'</span>);
+<span class="m-var">ax6</span> = <span class="m-func">axes</span>(<span class="m-str">'Parent'</span>, <span class="m-var">f6</span>);
 <span class="m-var">M_vector</span> = [<span class="m-num">50</span>, <span class="m-num">100</span>, <span class="m-num">200</span>, <span class="m-num">500</span>, <span class="m-num">1000</span>, <span class="m-num">2000</span>, <span class="m-num">5000</span>, <span class="m-num">10000</span>];
-<span class="m-keyword">for</span> <span class="m-var">idx_m</span> = <span class="m-num">1</span>:<span class="m-func">length</span>(<span class="m-var">M_vector</span>)
-    <span class="m-var">M_val</span> = <span class="m-var">M_vector</span>(<span class="m-var">idx_m</span>);
-    [<span class="m-var">X_sub</span>, ~] = <span class="m-func">generar_proceso_sinusoidal</span>(<span class="m-var">M_val</span>, <span class="m-var">cfg</span>.<span class="m-var">t</span>, <span class="m-var">cfg</span>.<span class="m-var">A</span>, <span class="m-var">cfg</span>.<span class="m-var">f0</span>, <span class="m-var">cfg</span>.<span class="m-var">seed</span> + <span class="m-var">idx_m</span>*<span class="m-num">7</span>);
-    [<span class="m-var">mu_sub</span>, ~, ~, <span class="m-var">R_tau_sub</span>, ~] = <span class="m-func">estimar_estadisticas_conjunto</span>(<span class="m-var">X_sub</span>, <span class="m-var">cfg</span>.<span class="m-var">t</span>);
-    <span class="m-var">mae_mu_convergencia</span>(<span class="m-var">idx_m</span>) = <span class="m-func">mean</span>(<span class="m-func">abs</span>(<span class="m-var">mu_sub</span>));
-    <span class="m-var">rmse_convergencia</span>(<span class="m-var">idx_m</span>) = <span class="m-func">sqrt</span>(<span class="m-func">mean</span>((<span class="m-var">R_tau_sub</span> - <span class="m-var">R_teorica</span>).^<span class="m-num">2</span>));
-<span class="m-keyword">end</span>
-<span class="m-func">loglog</span>(<span class="m-var">M_vector</span>, <span class="m-var">mae_mu_convergencia</span>, <span class="m-str">'s-'</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">1.6</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'MAE \mu_X(t)'</span>);
-<span class="m-func">loglog</span>(<span class="m-var">M_vector</span>, <span class="m-var">rmse_convergencia</span>, <span class="m-str">'o-'</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">1.6</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'RMSE R_X(\tau)'</span>);
-<span class="m-func">loglog</span>(<span class="m-var">M_vector</span>, <span class="m-var">pendiente_asintotica</span>, <span class="m-str">'k--'</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">1.4</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'O(1/\surd M)'</span>);</code></pre>
+<span class="m-comment">% Promediado Monte Carlo para convergencia asintotica limpia</span>
+<span class="m-func">loglog</span>(<span class="m-var">ax6</span>, <span class="m-var">M_vector</span>, <span class="m-var">mae_mu_convergencia</span>, <span class="m-str">'s-'</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">1.6</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'MAE \mu_X(t)'</span>);
+<span class="m-func">hold</span>(<span class="m-var">ax6</span>, <span class="m-str">'on'</span>); <span class="m-func">grid</span>(<span class="m-var">ax6</span>, <span class="m-str">'on'</span>); <span class="m-func">box</span>(<span class="m-var">ax6</span>, <span class="m-str">'on'</span>);
+<span class="m-func">loglog</span>(<span class="m-var">ax6</span>, <span class="m-var">M_vector</span>, <span class="m-var">rmse_convergencia</span>, <span class="m-str">'o-'</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">1.6</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'RMSE R_X(\tau)'</span>);
+<span class="m-func">loglog</span>(<span class="m-var">ax6</span>, <span class="m-var">M_vector</span>, <span class="m-var">pendiente_asintotica</span>, <span class="m-str">'k--'</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">1.4</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'O(1/\surd M)'</span>);
+<span class="m-func">set</span>(<span class="m-var">ax6</span>, <span class="m-str">'XScale'</span>, <span class="m-str">'log'</span>, <span class="m-str">'YScale'</span>, <span class="m-str">'log'</span>); <span class="m-comment">% Ejes estrictamente logarítmicos</span></code></pre>
                 </div>
               </div>
             </div>
@@ -1471,16 +1470,20 @@
 
   <!-- MODAL LIGHTBOX PARA IMÁGENES MATLAB 300 DPI -->
   <div id="image-lightbox-modal" class="image-lightbox-modal">
-    <div class="lightbox-content">
+    <div class="lightbox-backdrop" id="lightbox-backdrop"></div>
+    <div class="lightbox-content-box">
       <div class="lightbox-header">
-        <h4 id="lightbox-title">Visualización de Figura MATLAB (300 DPI Alta Resolución)</h4>
-        <button id="lightbox-close" class="lightbox-close-btn" title="Cerrar (Esc)">✕</button>
+        <div class="lightbox-title-badge">
+          <span class="badge-dot-green"></span>
+          <span id="lightbox-title">Visualización de Figura MATLAB (300 DPI Alta Resolución)</span>
+        </div>
+        <button id="lightbox-close" class="btn-close-lightbox" title="Cerrar (Esc)">✕</button>
       </div>
-      <div class="lightbox-img-wrapper">
+      <div class="lightbox-body">
         <img id="lightbox-image" src="" alt="Figura MATLAB en Alta Resolución">
       </div>
       <div class="lightbox-footer">
-        <span class="lightbox-hint">🔍 Renderizado original exportado a 300 DPI mediante <code>exportgraphics(..., 'Resolution', 300)</code></span>
+        <span class="lightbox-hint">🔍 Renderizado original exportado a 300 DPI con <code>exportgraphics</code> | Cierra con <kbd>Esc</kbd></span>
         <a id="lightbox-download-link" href="" download class="btn-demo-run" style="text-decoration: none; padding: 0.35rem 0.8rem; font-size: 0.78rem;">⬇ Descargar PNG 300 DPI</a>
       </div>
     </div>

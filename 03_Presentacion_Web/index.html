@@ -613,70 +613,114 @@
           <span class="slide-subheadline">Condición de Nyquist-Shannon y suite modular de 6 módulos</span>
         </div>
         <div class="slide-body">
-          <div class="split-2col">
-            <div class="math-card">
+          <!-- 1. Parte Superior: Parámetros Físicos y Estructura Modular -->
+          <div class="split-2col" style="gap: 0.8rem;">
+            <div class="math-card" style="padding: 0.65rem 0.85rem;">
               <div class="math-card-header">⚙️ Parámetros Físicos Justificados</div>
-              <table style="width: 100%; border-collapse: collapse; font-size: 0.91rem; margin-top: 0.2rem;">
+              <table style="width: 100%; border-collapse: collapse; font-size: 0.81rem; margin-top: 0.15rem;">
                 <tbody style="color: var(--text-main);">
                   <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
-                    <td style="padding: 0.45rem 0.2rem; font-weight: 600;">Amplitud pico ($A$)</td>
-                    <td style="color: var(--mint-neon); font-weight: 700;">$2.00\text{ V}$ (Potencia teórica $P_X =
-                      A^2/2 = 2.00\text{ W}$)</td>
+                    <td style="padding: 0.3rem 0.2rem; font-weight: 600;">Amplitud pico ($A$)</td>
+                    <td style="color: var(--mint-neon); font-weight: 700;">$2.00\text{ V}$ (Potencia teórica $P_X = A^2/2 = 2.00\text{ W}$)</td>
                   </tr>
                   <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
-                    <td style="padding: 0.45rem 0.2rem; font-weight: 600;">Frecuencia fundamental ($f_0$)</td>
-                    <td style="color: var(--mint-neon); font-weight: 700;">$1000\text{ Hz}$ ($1\text{ kHz}$), Periodo
-                      $T_0 = 1\text{ ms}$</td>
+                    <td style="padding: 0.3rem 0.2rem; font-weight: 600;">Frecuencia ($f_0$) y Periodo ($T_0$)</td>
+                    <td style="color: var(--mint-neon); font-weight: 700;">$1000\text{ Hz}$ ($1\text{ kHz}$), Periodo fundamental $T_0 = 1\text{ ms}$</td>
                   </tr>
                   <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
-                    <td style="padding: 0.45rem 0.2rem; font-weight: 600;">Frecuencia muestreo ($f_s$)</td>
-                    <td style="color: var(--mint-neon); font-weight: 700;">$20000\text{ Hz}$ ($20\text{ kSa/s}$, $\Delta
-                      t = 50\,\mu\text{s}$)</td>
+                    <td style="padding: 0.3rem 0.2rem; font-weight: 600;">Frecuencia muestreo ($f_s$)</td>
+                    <td style="color: var(--mint-neon); font-weight: 700;">$20000\text{ Hz}$ ($20\text{ kSa/s}$, $\Delta t = 50\,\mu\text{s}$)</td>
                   </tr>
                   <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
-                    <td style="padding: 0.45rem 0.2rem; font-weight: 600;">Resolución temporal</td>
-                    <td style="color: var(--mint-neon); font-weight: 700;">$20\text{ muestras/ciclo}$ ($f_s = 20 f_0 \gg
-                      2 f_0$)</td>
+                    <td style="padding: 0.3rem 0.2rem; font-weight: 600;">Resolución temporal</td>
+                    <td style="color: var(--mint-neon); font-weight: 700;">$20\text{ muestras/ciclo}$ ($f_s = 20 f_0 \gg 2 f_0$ sobre-Nyquist)</td>
                   </tr>
                   <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
-                    <td style="padding: 0.45rem 0.2rem; font-weight: 600;">Ventana ensamble ($T_{\text{obs}}$)</td>
-                    <td style="color: var(--mint-neon); font-weight: 700;">$5\text{ ms}$ ($5\text{ periodos completos}$,
-                      $N=101$ pts)</td>
+                    <td style="padding: 0.3rem 0.2rem; font-weight: 600;">Ventana ensamble ($T_{\text{obs}}$)</td>
+                    <td style="color: var(--mint-neon); font-weight: 700;">$5\text{ ms}$ ($5\text{ periodos completos}$, $N=101$ puntos)</td>
                   </tr>
                   <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
-                    <td style="padding: 0.45rem 0.2rem; font-weight: 600;">Ventana ergodicidad ($T_{\text{long}}$)</td>
-                    <td style="color: var(--mint-neon); font-weight: 700;">$1.0\text{ s}$ ($1000\text{ ciclos
-                      completos}$, $N=20001$ pts)</td>
+                    <td style="padding: 0.3rem 0.2rem; font-weight: 600;">Ventana ergodicidad ($T_{\text{long}}$)</td>
+                    <td style="color: var(--mint-neon); font-weight: 700;">$1.0\text{ s}$ ($1000\text{ ciclos completos}$, $N=20001$ puntos)</td>
                   </tr>
                   <tr>
-                    <td style="padding: 0.45rem 0.2rem; font-weight: 600;">Semilla de reproducibilidad</td>
-                    <td style="color: var(--emerald-400); font-family: var(--font-mono); font-weight: 700;">rng(202608)
-                      (100% Determinista)</td>
+                    <td style="padding: 0.3rem 0.2rem; font-weight: 600;">Semilla fija determinista</td>
+                    <td style="color: var(--emerald-400); font-family: var(--font-mono); font-weight: 700;">rng(202608) (Reproducibilidad 100%)</td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
-            <div class="math-card">
+            <div class="math-card" style="padding: 0.65rem 0.85rem;">
               <div class="math-card-header">🧩 Estructura Modular de Software</div>
-              <ul style="font-size: 0.88rem; line-height: 1.65; color: var(--text-main); padding-left: 1.2rem;">
-                <li><strong style="color: var(--mint-neon);">config_parametros.m:</strong> Centraliza variables físicas,
-                  rutas y figuras.</li>
-                <li><strong style="color: var(--mint-neon);">generar_proceso_sinusoidal.m:</strong> Vectorización
-                  matricial $[M \times N]$ sin bucles for.</li>
-                <li><strong style="color: var(--mint-neon);">estimar_estadisticas_conjunto.m:</strong> Matriz
-                  $\hat{\mathbf{R}}_X = \frac{1}{M}\mathbf{X}^T\mathbf{X}$ y diagonales Toeplitz.</li>
-                <li><strong style="color: var(--mint-neon);">estimar_estadisticas_temporales.m:</strong> Estimador
-                  insesgado de autocorrelación con <code>xcorr</code>.</li>
-                <li><strong style="color: var(--mint-neon);">simular_contraejemplo.m:</strong> Rampa de modulación y
-                  caminata aleatoria.</li>
-                <li><strong style="color: var(--mint-neon);">main_simulacion_tema08.m:</strong> Pipeline maestro y
-                  exportador IEEE 300 DPI.</li>
+              <ul style="font-size: 0.81rem; line-height: 1.5; color: var(--text-main); padding-left: 1.1rem; margin-top: 0.15rem;">
+                <li><strong style="color: var(--mint-neon);">config_parametros.m:</strong> Centraliza variables físicas, rutas y figuras.</li>
+                <li><strong style="color: var(--mint-neon);">generar_proceso_sinusoidal.m:</strong> Vectorización matricial $[M \times N]$ sin bucles.</li>
+                <li><strong style="color: var(--mint-neon);">estimar_estadisticas_conjunto.m:</strong> Matriz $\hat{\mathbf{R}}_X = \frac{1}{M}\mathbf{X}^T\mathbf{X}$ y Toeplitz.</li>
+                <li><strong style="color: var(--mint-neon);">estimar_estadisticas_temporales.m:</strong> Estimador insesgado con <code>xcorr</code>.</li>
+                <li><strong style="color: var(--mint-neon);">simular_contraejemplo.m:</strong> Rampa de modulación y paseo aleatorio.</li>
+                <li><strong style="color: var(--mint-neon);">main_simulacion_tema08.m:</strong> Pipeline maestro y exportador IEEE 300 DPI.</li>
               </ul>
-              <div class="telecom-card" style="margin-top: 0.4rem; padding: 0.65rem 0.95rem;">
-                <span style="color: var(--mint-neon); font-weight: 700;">Criterio Nyquist-Shannon:</span> Al
-                sobremuestrear a $20\text{ kSa/s}$ ($10\times$ la tasa de Nyquist $2f_0 = 2\text{ kHz}$), se elimina el
-                aliasing espectral y se asegura precisión submilisegundo en las diagonales Toeplitz.
+              <div class="telecom-card" style="margin-top: 0.35rem; padding: 0.5rem 0.8rem; font-size: 0.77rem; line-height: 1.4;">
+                <span style="color: var(--mint-neon); font-weight: 700;">Criterio Nyquist-Shannon:</span> Al sobremuestrear a $20\text{ kSa/s}$ ($10\times$ la tasa de Nyquist $2f_0 = 2\text{ kHz}$), se elimina el aliasing espectral y se asegura precisión submilisegundo en las diagonales Toeplitz.
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Segmentos de Código MATLAB Clave para la Ejecución Experimental -->
+          <div style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.65rem;">
+            <div class="split-2col" style="gap: 0.8rem;">
+              <!-- Código 1: config_parametros.m -->
+              <div class="code-snippet-box">
+                <div class="code-snippet-header">
+                  <span>MATLAB: config_parametros.m</span>
+                  <span>Discretización & Semilla</span>
+                </div>
+                <div class="code-snippet-body" style="font-size: 0.72rem; line-height: 1.45;">
+                  <pre><code><span class="m-comment">% 1. Parámetros globales y discretización temporal</span>
+<span class="m-var">cfg</span>.<span class="m-var">seed</span> = <span class="m-num">202608</span>;          <span class="m-comment">% Semilla determinista (reproducibilidad 100%)</span>
+<span class="m-var">cfg</span>.<span class="m-var">A</span> = <span class="m-num">2.0</span>; <span class="m-var">cfg</span>.<span class="m-var">f0</span> = <span class="m-num">1000</span>; <span class="m-comment">% Portadora RF: 2 V pico, 1 kHz</span>
+<span class="m-var">cfg</span>.<span class="m-var">fs</span> = <span class="m-num">20000</span>; <span class="m-var">cfg</span>.<span class="m-var">dt</span> = <span class="m-num">1</span>/<span class="m-var">cfg</span>.<span class="m-var">fs</span>; <span class="m-comment">% 20 kSa/s (20 pts/ciclo >> Nyquist)</span>
+<span class="m-var">cfg</span>.<span class="m-var">T_obs</span> = <span class="m-num">5</span> * (<span class="m-num">1</span>/<span class="m-var">cfg</span>.<span class="m-var">f0</span>); <span class="m-comment">% Ventana ensamble: 5 ms (N = 101 pts)</span>
+<span class="m-var">cfg</span>.<span class="m-var">T_long</span> = <span class="m-num">1.0</span>;           <span class="m-comment">% Ventana ergodicidad: 1.0 s (20,001 pts)</span>
+<span class="m-var">cfg</span>.<span class="m-var">M_grande</span> = <span class="m-num">10000</span>;      <span class="m-comment">% Tamaño ensamble de alta precisión</span></code></pre>
+                </div>
+              </div>
+
+              <!-- Código 2: generar_proceso_sinusoidal.m & orquestación -->
+              <div class="code-snippet-box">
+                <div class="code-snippet-header">
+                  <span>MATLAB: generar_proceso_sinusoidal.m</span>
+                  <span>Broadcasting Vectorizado [M x N]</span>
+                </div>
+                <div class="code-snippet-body" style="font-size: 0.72rem; line-height: 1.45;">
+                  <pre><code><span class="m-comment">% 2. Generación vectorizada en memoria (sin bucles for)</span>
+<span class="m-func">rng</span>(<span class="m-var">seed</span>);
+<span class="m-var">Theta</span> = <span class="m-num">2</span> * <span class="m-func">pi</span> * <span class="m-func">rand</span>(<span class="m-var">M</span>, <span class="m-num">1</span>);          <span class="m-comment">% Fases aleatorias U(0, 2pi) [M x 1]</span>
+<span class="m-var">fase_total</span> = <span class="m-num">2</span> * <span class="m-func">pi</span> * <span class="m-var">f0</span> * <span class="m-var">t</span> + <span class="m-var">Theta</span>; <span class="m-comment">% Matriz [M x N] por broadcasting</span>
+<span class="m-var">X</span> = <span class="m-var">A</span> * <span class="m-func">cos</span>(<span class="m-var">fase_total</span>);              <span class="m-comment">% 10,000 realizaciones simultáneas</span>
+
+<span class="m-comment">% 3. Estimadores matriciales de alta velocidad</span>
+<span class="m-var">mu_hat</span> = <span class="m-func">mean</span>(<span class="m-var">X</span>, <span class="m-num">1</span>);                  <span class="m-comment">% Media transversal instantánea</span>
+<span class="m-var">R_mat</span>  = (<span class="m-var">X</span>' * <span class="m-var">X</span>) / <span class="m-var">M</span>;                <span class="m-comment">% Matriz de correlación cruzada 2D</span></code></pre>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. Comentario Explicativo Resaltando Aspectos Clave -->
+            <div class="analysis-card" style="padding: 0.65rem 0.95rem;">
+              <h5>💡 Aspectos Clave de Implementación para la Ejecución Experimental</h5>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; font-size: 0.79rem; margin-top: 0.25rem; line-height: 1.45;">
+                <div>
+                  <strong style="color: var(--mint-neon);">1. Reproducibilidad Determinista:</strong> El anclaje centralizado con <code>rng(cfg.seed)</code> garantiza que cualquier evaluador obtenga exactamente las mismas realizaciones, potencias y figuras a 300 DPI al reejecutar el script maestro.
+                  <br><br>
+                  <strong style="color: var(--mint-neon);">2. Criterio de Sobremuestreo ($10\times$ Nyquist):</strong> Al fijar $f_s = 20\text{ kSa/s}$ (20 puntos por periodo), se elimina el aliasing y se logra resolución temporal submilisegundo ($\Delta t = 50\,\mu\text{s}$) para los cortes transversales en $t_0 = 1.25\text{ ms}$.
+                </div>
+                <div>
+                  <strong style="color: var(--mint-neon);">3. Vectorización Matricial $[M \times N]$:</strong> La generación de $10,000 \times 101$ puntos mediante suma matricial implícita (broadcasting) suprime bucles lentos en MATLAB, reduciendo el tiempo de cómputo de varios segundos a milisegundos.
+                  <br><br>
+                  <strong style="color: var(--mint-neon);">4. Doble Escala Temporal ($T_{\text{obs}}$ vs $T_{\text{long}}$):</strong> Se emplean $5\text{ ms}$ ($101$ puntos) para inspeccionar la invarianza de conjunto instantánea, y $1.0\text{ s}$ ($20,001$ puntos continuos) para contrastar rigurosamente la ergodicidad temporal con <code>xcorr</code>.
+                </div>
               </div>
             </div>
           </div>

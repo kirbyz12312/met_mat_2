@@ -936,6 +936,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (canvasVar) canvasVar.style.display = (tabType === 'var') ? 'block' : 'none';
           if (imgMatlab) imgMatlab.style.display = (tabType === 'matlab') ? 'block' : 'none';
           if (zoomHint) zoomHint.style.display = (tabType === 'matlab') ? 'block' : 'none';
+          if (viewerBox) viewerBox.classList.toggle('show-matlab', tabType === 'matlab');
 
           if (tabType === 'mean') initChartExp2Mean();
           if (tabType === 'var') initChartExp2Var();
@@ -981,6 +982,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (canvasRW) canvasRW.style.display = (tabType === 'rw') ? 'block' : 'none';
           if (imgMatlab) imgMatlab.style.display = (tabType === 'matlab') ? 'block' : 'none';
           if (zoomHint) zoomHint.style.display = (tabType === 'matlab') ? 'block' : 'none';
+          if (viewerBox) viewerBox.classList.toggle('show-matlab', tabType === 'matlab');
 
           if (tabType === 'var') initChartExp5Var();
           if (tabType === 'traces') initChartExp5Traces();
@@ -1033,25 +1035,27 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function setupLightboxEvents() {
-    // Abrir modal al hacer clic en cualquier imagen MATLAB o su hint flotante
-    document.querySelectorAll('.chart-canvas-area').forEach(area => {
-      const img = area.querySelector('.matlab-img-view');
-      const hint = area.querySelector('.matlab-zoom-hint');
-      if (img) {
-        img.style.cursor = 'zoom-in';
-        img.addEventListener('click', (e) => {
-          e.stopPropagation();
+    // Abrir modal al hacer clic en cualquier imagen MATLAB
+    document.querySelectorAll('.matlab-img-view').forEach(img => {
+      img.style.cursor = 'zoom-in';
+      img.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openLightbox(img.src, img.alt);
+      });
+    });
+
+    // Abrir modal al hacer clic en el botón / hint de zoom
+    document.querySelectorAll('.matlab-zoom-hint').forEach(hint => {
+      hint.style.cursor = 'pointer';
+      hint.style.pointerEvents = 'auto';
+      hint.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const area = hint.closest('.chart-canvas-area') || hint.closest('.chart-viewer-box');
+        const img = area ? area.querySelector('.matlab-img-view') : null;
+        if (img) {
           openLightbox(img.src, img.alt);
-        });
-      }
-      if (hint && img) {
-        hint.style.cursor = 'pointer';
-        hint.style.pointerEvents = 'auto';
-        hint.addEventListener('click', (e) => {
-          e.stopPropagation();
-          openLightbox(img.src, img.alt);
-        });
-      }
+        }
+      });
     });
 
     // Cerrar modal

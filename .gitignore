@@ -1,0 +1,13 @@
+# LaTeX temporary files
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# OS generated files
+.DS_Store
+Thumbs.db
+Desktop.ini

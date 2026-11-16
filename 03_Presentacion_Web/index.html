@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TIF Tema 08: Procesos Estocásticos en Telecomunicaciones | Grupo 02 - UNSA</title>
+
+  <!-- Estilos principales: Verde Tecnológico / Emerald High-Tech -->
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Librería KaTeX para fórmulas matemáticas nítidas -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
+  <!-- Librería Chart.js para gráficos interactivos en vivo -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+  <!-- Librería Plotly.js para mapas de calor matriciales 2D (Toeplitz) -->
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+
+<body>
+
+  <!-- Canvas de fondo dinámico con ondas fasoriales y barras armónicas -->
+  <canvas id="bg-canvas"></canvas>
+  <div class="ambient-glow-1"></div>
+  <div class="ambient-glow-2"></div>
+
+  <!-- HEADER PROGRESS & BARRA DE CONTROL SUPERIOR -->
+  <header class="header-progress">
+    <div class="brand-wrapper">
+      <div class="brand-badge">
+        <span class="pulse-dot"></span>
+        <span>UNSA • EPIT</span>
+      </div>
+      <div class="brand-title">
+        <span>Métodos Matemáticos 2</span>
+        <span class="sep">/</span>
+        <span style="color: var(--mint-neon); font-weight: 700;">Grupo 02</span>
+      </div>
+    </div>
+
+
+
+    <!-- Derecha: Acciones rápidas -->
+    <div class="header-actions">
+      <button id="btn-overview" class="btn-header" title="Ver índice de diapositivas (Tecla O o M)">
+        <span>📑</span> <span>Índice</span>
+      </button>
+      <button id="btn-fullscreen" class="btn-header" title="Pantalla Completa (Tecla F)">
+        <span>⛶</span> <span>Pantalla Completa</span>
+      </button>
+      <button id="btn-print-pdf" class="btn-header" title="Guardar / Imprimir diapositivas como PDF">
+        <span>🖨️</span> <span>Exportar PDF</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- BARRA DE PROGRESO LINEAL GLOBAL -->
+  <div class="progress-line-track">
+    <div id="progress-bar-fill" class="progress-line-bar"></div>
+  </div>
+
+  <!-- ESCENARIO DE DIAPOSITIVAS (CONTENEDOR 16:9) -->
+  <main class="presentation-container">
+    <div class="deck-stage">
+
+      <!-- ====================================================================
+           SLIDE 1: PORTADA OFICIAL INSTITUCIONAL CON LOGOS UNSA Y EPIT
+           ==================================================================== -->
+      <section class="slide-pane active" id="slide-1">
+        <div class="cover-wrapper">
+          <!-- Cabecera con Logos a ambos lados del Título -->
+          <div class="cover-header-logos">
+            <div class="cover-logo-wrapper">
+              <img src="figures/Escudo_UNSA.png" alt="Escudo Universidad Nacional de San Agustín de Arequipa"
+                class="cover-logo-img">
+              <span class="cover-logo-label">UNSA</span>
+            </div>
+
+            <div class="cover-institutional-center">
+              <div class="cover-pill-academic">
+                <span>Trabajo de Investigación Formativa | Semestre 2026-B</span>
+              </div>
+              <div
+                style="font-size: 0.85rem; font-weight: 700; color: #fff; letter-spacing: 0.05em; text-transform: uppercase;">
+                Universidad Nacional de San Agustín de Arequipa
+              </div>
+              <div
+                style="font-size: 0.75rem; color: var(--emerald-300); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 0.4rem;">
+                Facultad de Ingeniería de Producción y Servicios | Escuela Profesional de Ingeniería en
+                Telecomunicaciones
+              </div>
+              <h1 class="cover-h1">
+                Modelado Teórico y Simulación en MATLAB de <br>
+                <span class="gradient-text">Procesos Estocásticos</span>
+              </h1>
+              <p class="cover-desc">
+                Clasificación, Estacionariedad en Sentido Amplio (WSS) y Ergodicidad en Sistemas de Telecomunicaciones
+              </p>
+            </div>
+
+            <div class="cover-logo-wrapper">
+              <img src="figures/LOGO_EPIT.png" alt="Logo Escuela Profesional de Ingeniería en Telecomunicaciones"
+                class="cover-logo-img">
+              <span class="cover-logo-label">EPIT</span>
+            </div>
+          </div>
+
+          <!-- Metadatos de la asignatura -->
+          <div
+            style="display: flex; justify-content: center; gap: 2.2rem; font-size: 0.83rem; color: var(--text-muted); background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-slate); border-radius: 8px; padding: 0.5rem 1.2rem; max-width: 950px; margin: 0 auto;">
+            <div><strong style="color: var(--mint-neon);">Curso:</strong> Métodos Matemáticos 2</div>
+            <div><strong style="color: var(--mint-neon);">Docente:</strong> Mg. Oswaldo René Banda Sayco</div>
+            <div><strong style="color: var(--mint-neon);">Grupo:</strong> Grupo 02 </div>
+          </div>
+
+          <!-- Grid de los 5 Integrantes -->
+          <div>
+            <div
+              style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem;">
+              Integrantes del Grupo de Investigación:
+            </div>
+            <div class="authors-team-grid">
+              <div class="author-card-modern">
+                <div class="author-avatar">01</div>
+                <div class="author-name-text">Gutiérrez Ccolqque, Franco Arturo</div>
+                <div class="author-role-text">Modelado SSS / WSS</div>
+              </div>
+              <div class="author-card-modern">
+                <div class="author-avatar">02</div>
+                <div class="author-name-text">Gaimez Ollachica, Fernando</div>
+                <div class="author-role-text">Simulación Monte Carlo</div>
+              </div>
+              <div class="author-card-modern">
+                <div class="author-avatar">03</div>
+                <div class="author-name-text">Uturunco Cuela, Zaul Francisco</div>
+                <div class="author-role-text">Ergodicidad & Telecom</div>
+              </div>
+              <div class="author-card-modern">
+                <div class="author-avatar">04</div>
+                <div class="author-name-text">Castro Quispe, Fernando Josue</div>
+                <div class="author-role-text">Contraejemplos & Ruido PLL</div>
+              </div>
+              <div class="author-card-modern">
+                <div class="author-avatar">05</div>
+                <div class="author-name-text">Quispe Flores, Benjamin Eduardo</div>
+                <div class="author-role-text">Algoritmos Matriciales</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Botón de inicio -->
+          <div class="cover-cta-row">
+            <button id="btn-start-presentation" class="btn-start-presentation">
+              <span>Comenzar Presentación</span>
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SLIDE 2: INTRODUCCION Y JUSTIFICACION EN TELECOMUNICACIONES
+           ==================================================================== -->
+      <section class="slide-pane" id="slide-2">
+        <div class="slide-topbar">
+          <div class="topbar-left">
+            <div class="badge-row">
+              <span class="badge-slide-id">Diapositiva 02</span>
+              <span class="badge-speaker">👤 Expositor: Franco Gutiérrez</span>
+              <span class="badge-category">I. Justificación Física</span>
+            </div>
+            <h2 class="slide-headline">El Rol Fundamental de los Procesos Estocásticos en Telecomunicaciones</h2>
+          </div>
+          <span class="slide-subheadline">De señales determinísticas ideales a la aleatoriedad física de los canales de
+            comunicación</span>
+        </div>
+        <div class="slide-body">
+          <div class="split-2col">
+            <div class="math-card">
+              <div class="math-card-header">📡 Realidad Física: Señal Determinística vs. Proceso Estocástico</div>
+
+              <!-- Diagrama visual comparativo -->
+              <div class="visual-diagram-box">
+                <div style="display: flex; justify-content: space-around; align-items: center; font-size: 0.85rem;">
+                  <div
+                    style="background: rgba(30, 41, 59, 0.7); padding: 0.55rem 0.95rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+                    <div style="color: var(--amber-400); font-weight: 700; margin-bottom: 0.2rem;">Determinístico $s(t)$
+                    </div>
+                    <div style="color: var(--text-dim); font-size: 0.74rem;">Inexistente en la práctica</div>
+                  </div>
+                  <div style="color: var(--mint-neon); font-size: 1.3rem; font-weight: 900;">➔</div>
+                  <div
+                    style="background: rgba(16, 185, 129, 0.15); padding: 0.55rem 0.95rem; border-radius: 8px; border: 1px solid var(--emerald-500);">
+                    <div style="color: var(--mint-neon); font-weight: 700; margin-bottom: 0.2rem;">Estocástico $X(t,
+                      \zeta)$</div>
+                    <div style="color: #6ee7b7; font-size: 0.74rem;">Realidad física del canal</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="formula-block-card">
+                <div class="formula-block-title">Ecuación Canónica de Recepción en Telecomunicaciones</div>
+                <div class="math-card-body">
+                  $$r(t) = s(t) * h(t, \tau) + n(t)$$
+                </div>
+                <div class="formula-interp-grid">
+                  <div class="formula-interp-item">
+                    <strong>Interpretación Física</strong>
+                    La señal recibida $r(t)$ combina la señal transmitida convolucionada con un canal dispersivo
+                    aleatorio $h(t, \tau)$ y perturbada por ruido térmico aditivo $n(t)$.
+                  </div>
+                  <div class="formula-interp-item">
+                    <strong>Uso en Ingeniería</strong>
+                    Determina la Relación Señal a Ruido (SNR), el umbral de decisión y el diseño del demodulador óptimo
+                    en
+                    receptores digitales.
+                  </div>
+                </div>
+              </div>
+
+              <p style="font-size: 0.88rem; line-height: 1.6; color: var(--text-muted);">
+                Fuentes inevitables de aleatoriedad: <em>Ruido térmico de Johnson-Nyquist</em> ($P=kTB$),
+                <em>Desvanecimiento multicamino (Multipath)</em> y <em>fase inicial desconocida en el oscilador local
+                  del receptor</em>.
+              </p>
+            </div>
+
+            <div class="math-card">
+              <div class="math-card-header">🎯 Objetivos y Contribución del Proyecto</div>
+              <div class="telecom-card" style="margin-bottom: 0.65rem;">
+                <h5>1. Rigor Matemático y Formalismo</h5>
+                Deducir analíticamente que la señal portadora con fase aleatoria $X(t) = A\cos(2\pi f_0 t + \Theta)$ con
+                $\Theta \sim U(0, 2\pi)$ posee media idénticamente nula ($\mu_X(t) = 0\text{ V}$) y autocorrelación
+                dependiente solo de $\tau$ ($R_X(\tau) = \frac{A^2}{2}\cos(2\pi f_0 \tau)$), cumpliendo estrictamente
+                WSS.
+              </div>
+              <div class="telecom-card" style="margin-bottom: 0.65rem;">
+                <h5>2. Comprobación de Ergodicidad</h5>
+                Demostrar que una única realización continua observada en el tiempo contiene toda la estadística de
+                $10,000$ antenas simultáneas, justificando la operación de los analizadores de espectro.
+              </div>
+              <div class="telecom-card">
+                <h5>3. Diagnóstico de No Estacionariedad</h5>
+                Simular la falla de WSS en presencia de modulación temporal y caminatas aleatorias (ruido de fase
+                acumulado en lazos PLL de RF).
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SLIDE 3: DEFINICION FORMAL Y CLASIFICACION BIDIMENSIONAL
+           ==================================================================== -->
+      <section class="slide-pane" id="slide-3">
+        <div class="slide-topbar">
+          <div class="topbar-left">
+            <div class="badge-row">
+              <span class="badge-slide-id">Diapositiva 03</span>
+              <span class="badge-speaker">👤 Expositor: Franco Gutiérrez</span>
+              <span class="badge-category">II. Marco Teórico</span>
+            </div>
+            <h2 class="slide-headline">Definición Formal y Clasificación Bidimensional</h2>
+          </div>
+          <span class="slide-subheadline">Espacio $(\Omega, \mathcal{F}, P)$, las 4 interpretaciones y taxonomía
+            $(\mathcal{T}, \mathcal{S})$</span>
+        </div>
+        <div class="slide-body">
+          <div class="split-2col">
+            <div class="math-card">
+              <div class="math-card-header">📐 Fundamento Probabilístico</div>
+              <p style="font-size: 0.91rem; line-height: 1.6; color: var(--text-muted);">
+                Un proceso estocástico $\{X(t, \zeta), t \in \mathcal{T}, \zeta \in \Omega\}$ mapea formalmente el
+                espacio muestral $\Omega$ indexado por el conjunto de tiempos $\mathcal{T}$:
+              </p>
+              <div class="math-card-body">
+                $$X: \mathcal{T} \times \Omega \longrightarrow \mathbb{R}$$
+              </div>
+
+              <div class="formula-block-card">
+                <div class="formula-block-title">Las Cuatro Interpretaciones Fundamentales</div>
+                <div style="font-size: 0.86rem; line-height: 1.6; color: var(--text-main);">
+                  1. $t = t_0$ fijo, $\zeta$ variable $\implies$ <strong>Variable Aleatoria</strong> instantánea
+                  $X(t_0)$.<br>
+                  2. $\zeta = \zeta_0$ fijo, $t$ variable $\implies$ <strong>Trayectoria / Realización</strong>
+                  $x(t)$.<br>
+                  3. $t_0, \zeta_0$ fijos a la vez $\implies$ <strong>Número Real</strong> (muestra escalar).<br>
+                  4. $t, \zeta$ ambos variables $\implies$ <strong>Proceso Estocástico Completo</strong> (el ensamble).
+                </div>
+              </div>
+            </div>
+
+            <div class="math-card">
+              <div class="math-card-header">📊 Taxonomía Bidimensional en Telecomunicaciones</div>
+              <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.4rem;">
+                Clasificación según la continuidad temporal ($\mathcal{T}$) y el espacio de estados ($\mathcal{S}$):
+              </p>
+              <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem;">
+                <thead>
+                  <tr style="border-bottom: 2px solid var(--emerald-400); color: var(--mint-neon);">
+                    <th style="padding: 0.5rem; text-align: left;">Categoría ($\mathcal{T}, \mathcal{S}$)</th>
+                    <th style="padding: 0.5rem; text-align: left;">Ejemplo en Telecomunicaciones</th>
+                  </tr>
+                </thead>
+                <tbody style="color: var(--text-main);">
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+                    <td style="padding: 0.5rem;"><strong>Continuo / Continuo</strong></td>
+                    <td style="padding: 0.5rem;">Voltaje de ruido térmico AWGN $n(t)$, Portadora RF $X(t)$</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+                    <td style="padding: 0.5rem;"><strong>Continuo / Discreto</strong></td>
+                    <td style="padding: 0.5rem;">Llegada de paquetes (Poisson), Señal telegráfica binaria</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+                    <td style="padding: 0.5rem;"><strong>Discreto / Continuo</strong></td>
+                    <td style="padding: 0.5rem;">Muestras de voz pre-cuantización, Coeficientes de canal $h[n]$</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.5rem;"><strong>Discreto / Discreto</strong></td>
+                    <td style="padding: 0.5rem;">Bits transmitidos $b[n] \in \{0, 1\}$, Constelación digital QAM</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="telecom-card" style="margin-top: 0.5rem; padding: 0.6rem 0.9rem;">
+                <span style="color: var(--mint-neon); font-weight: 700;">Principio de Modelado:</span> Toda señal real
+                en antena es una trayectoria particular $x(t, \zeta_0)$ de un ensamble de infinitas señales posibles.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SLIDE 4: ESTACIONARIEDAD: SSS VS WSS
+           ==================================================================== -->
+      <section class="slide-pane" id="slide-4">
+        <div class="slide-topbar">
+          <div class="topbar-left">
+            <div class="badge-row">
+              <span class="badge-slide-id">Diapositiva 04</span>
+              <span class="badge-speaker">👤 Expositor: Franco Gutiérrez</span>
+              <span class="badge-category">II. Marco Teórico</span>
+            </div>
+            <h2 class="slide-headline">Estacionariedad: Sentido Estricto (SSS) vs. Sentido Amplio (WSS)</h2>
+          </div>
+          <span class="slide-subheadline">Invarianza temporal de distribuciones y momentos de segundo orden</span>
+        </div>
+        <div class="slide-body">
+          <div class="split-2col">
+            <div class="math-card">
+              <div class="math-card-header">1. Estacionariedad Estricta (SSS)</div>
+              <p style="font-size: 0.91rem; line-height: 1.6; color: var(--text-muted);">
+                La distribución acumulada conjunta de cualquier orden finito $k$ es idéntica ante traslaciones
+                temporales arbitrarias $\tau \in \mathbb{R}$:
+              </p>
+              <div class="math-card-body">
+                $$F_{X(t_1),\dots,X(t_k)}(x_1,\dots,x_k) = F_{X(t_1+\tau),\dots,X(t_k+\tau)}(x_1,\dots,x_k)$$
+              </div>
+              <div class="telecom-card"
+                style="border-left-color: var(--amber-400); background: rgba(251, 191, 36, 0.08); margin-top: 0.5rem;">
+                <strong style="color: var(--amber-400);">Limitación Operativa:</strong> Exige medir distribuciones
+                conjuntas de orden infinito. En ingeniería práctica de comunicaciones se recurre a la condición de
+                segundo orden WSS.
+              </div>
+            </div>
+
+            <div class="math-card">
+              <div class="math-card-header">2. Estacionariedad en Sentido Amplio (WSS)</div>
+
+              <div class="formula-block-card">
+                <div class="formula-block-title">Condiciones Necesarias y Suficientes WSS</div>
+                <div class="math-card-body">
+                  $$\mu_X(t) = \mathbb{E}[X(t)] = \mu_X = \text{constante} \quad \forall t$$
+                  $$R_X(t_1, t_2) = \mathbb{E}[X(t_1) X(t_2)] = R_X(t_2 - t_1) = R_X(\tau)$$
+                  $$\mathbb{E}[X^2(t)] = R_X(0) < \infty \quad \text{(Potencia media finita)}$$ </div>
+                    <div class="formula-interp-grid">
+                      <div class="formula-interp-item">
+                        <strong>Interpretación Física</strong>
+                        La energía y la potencia promedio del canal no dependen de cuándo se enciende el receptor, sino
+                        únicamente de la separación temporal $\tau$.
+                      </div>
+                      <div class="formula-interp-item">
+                        <strong>Uso en Telecomunicaciones</strong>
+                        Base del modelo WSSUS de Bello (1963) para la ecualización adaptativa y estimación de canal
+                        (CSI) en redes 4G y 5G.
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+      </section>
+
+      <!-- ====================================================================
+           SLIDE 5: DEDUCCION ANALITICA DEL MODELO SINUSOIDAL
+           ==================================================================== -->
+      <section class="slide-pane" id="slide-5">
+        <div class="slide-topbar">
+          <div class="topbar-left">
+            <div class="badge-row">
+              <span class="badge-slide-id">Diapositiva 05</span>
+              <span class="badge-speaker">👤 Expositor: Fernando Gaimez</span>
+              <span class="badge-category">II. Deducción Matemática</span>
+            </div>
+            <h2 class="slide-headline">Deducción Analítica: Portadora con Fase Aleatoria</h2>
+          </div>
+          <span class="slide-subheadline">Modelo canónico: $X(t) = A\cos(2\pi f_0 t + \Theta)$ con $\Theta \sim U(0,
+            2\pi)$</span>
+        </div>
+        <div class="slide-body">
+          <div class="split-2col">
+            <div class="math-card">
+              <div class="math-card-header">1. Media de Conjunto $\mu_X(t)$</div>
+              <div class="formula-block-card">
+                <div class="math-card-body">
+                  $$\begin{aligned}
+                  \mu_X(t) &= \mathbb{E}[X(t)] = \int_0^{2\pi} A\cos(2\pi f_0 t + \theta)\,\frac{1}{2\pi}\,d\theta
+                  \\[4pt]
+                  &= \frac{A}{2\pi}\Big[\sin(2\pi f_0 t + \theta)\Big]_0^{2\pi} = \mathbf{0\text{ V}}
+                  \end{aligned}$$
+                </div>
+                <div class="formula-interp-grid">
+                  <div class="formula-interp-item">
+                    <strong>Interpretación</strong>
+                    La distribución uniforme $\Theta \sim U(0, 2\pi)$ cancela simétricamente semiciclos positivos y
+                    negativos en todo instante $t$.
+                  </div>
+                  <div class="formula-interp-item">
+                    <strong>Uso en Telecom</strong>
+                    Garantiza nula componente continua (DC offset) espuria en las etapas de mezclado analógico y
+                    conversión RF.
+                  </div>
+                </div>
+              </div>
+              <div class="telecom-card">
+                <strong style="color: var(--mint-neon);">✓ 1ª Condición WSS:</strong>
+                $\mu_X(t) = 0\text{ V}$ constante e independiente del tiempo $t$.
+              </div>
+            </div>
+
+            <div class="math-card">
+              <div class="math-card-header">2. Autocorrelación de Conjunto $R_X(t_1, t_2)$ y Potencia</div>
+              <div class="formula-block-card">
+                <div class="math-card-body">
+                  $$\begin{aligned}
+                  R_X(t_1, t_2) &= \frac{A^2}{2}\cos\big(2\pi f_0 (t_2 - t_1)\big) \\
+                  &\quad + \frac{A^2}{2}\underbrace{\mathbb{E}\left[\cos\big(2\pi f_0(t_1+t_2)+2\Theta\big)\right]}_{=\,
+                  0} \\[4pt]
+                  R_X(\tau) &= \frac{A^2}{2}\cos(2\pi f_0 \tau) \quad (\tau = t_2 - t_1) \\[3pt]
+                  P_X &= R_X(0) = \frac{A^2}{2} = \mathbf{2.00\text{ W}}
+                  \end{aligned}$$
+                </div>
+                <div class="formula-interp-grid">
+                  <div class="formula-interp-item">
+                    <strong>Interpretación</strong>
+                    $R_X$ depende únicamente del retardo $\tau = t_2 - t_1$, siendo estrictamente invariante ante
+                    traslaciones temporales.
+                  </div>
+                  <div class="formula-interp-item">
+                    <strong>Uso en Telecom</strong>
+                    Por Wiener-Khinchin, la DEP $S_X(f)$ concentra la potencia media $P_X = 2.0\text{ W}$ en impulsos
+                    discretos a $\pm f_0$.
+                  </div>
+                </div>
+              </div>
+              <div class="telecom-card">
+                <strong style="color: var(--mint-neon);">✓ 2ª Condición WSS:</strong>
+                $R_X(t_1, t_2) = R_X(\tau)$ con potencia promedio finita $P_X < \infty$. </div>
+              </div>
+            </div>
+          </div>
+      </section>
+
+      <!-- ====================================================================
+           SLIDE 6: DESCOMPOSICION ORTOGONAL I/Q EN BANDA BASE
+           ==================================================================== -->
+      <section class="slide-pane" id="slide-6">
+        <div class="slide-topbar">
+          <div class="topbar-left">
+            <div class="badge-row">
+              <span class="badge-slide-id">Diapositiva 06</span>
+              <span class="badge-speaker">👤 Expositor: Fernando Gaimez</span>
+              <span class="badge-category">II. Telecomunicaciones Avanzadas</span>
+            </div>
+            <h2 class="slide-headline">Profundización: Descomposición Ortogonal en Fase y Cuadratura (I/Q)</h2>
+          </div>
+          <span class="slide-subheadline">Fundamento de receptores de radio definida por software (SDR) y constelaciones
+            digitales</span>
+        </div>
+        <div class="slide-body">
+          <div class="split-2col">
+            <div class="math-card">
+              <div class="math-card-header">🔄 Conversión Descendente a Banda Base</div>
+              <p style="font-size: 0.91rem; line-height: 1.6; color: var(--text-muted);">
+                Descomponiendo la portadora sinusoidal mediante la identidad trigonométrica del coseno de una suma:
+              </p>
+              <div class="math-card-body">
+                $$X(t) = \underbrace{A\cos\Theta}_{X_I} \cos(2\pi f_0 t) - \underbrace{A\sin\Theta}_{X_Q} \sin(2\pi f_0
+                t)$$
+              </div>
+
+              <div class="formula-block-card">
+                <div class="formula-block-title">Momentos Estadísticos Cruzados de las Ramas I y Q</div>
+                <div class="math-card-body" style="font-size: 0.95rem;">
+                  $$\mathbb{E}[X_I] = 0, \quad \mathbb{E}[X_Q] = 0$$
+                  $$\text{Var}(X_I) = \text{Var}(X_Q) = \frac{A^2}{2\pi}\int_0^{2\pi}\cos^2\theta d\theta =
+                  \frac{A^2}{2} = 2.0\text{ W}$$
+                  $$\text{Cov}(X_I, X_Q) = \mathbb{E}[X_I X_Q] = \frac{A^2}{4\pi}\int_0^{2\pi}\sin(2\theta) d\theta =
+                  \mathbf{0}$$
+                </div>
+              </div>
+            </div>
+
+            <div class="math-card">
+              <div class="math-card-header">💡 Impacto Físico en Receptores Digitales</div>
+              <div class="telecom-card" style="margin-bottom: 0.7rem;">
+                <h5>1. Cero Interferencia Inter-canal (ICI)</h5>
+                Como $\text{Cov}(X_I, X_Q) = 0$, las ramas $I$ y $Q$ son estrictamente incorreladas y ortogonales en el
+                espacio euclidiano. Esto
+                duplica la tasa de transmisión de bits en el mismo espectro RF en esquemas como QPSK, 16-QAM, 64-QAM y
+                OFDM.
+              </div>
+              <div class="telecom-card">
+                <h5>2. Origen del Canal de Desvanecimiento Rayleigh</h5>
+                Al superponerse múltiples rayos en un canal multicamino $X(t) = \sum A_k \cos(2\pi f_0 t + \Theta_k)$,
+                por el Teorema del Límite Central las componentes $I$ y $Q$ convergen a dos distribuciones gaussianas
+                independientes $\mathcal{N}(0, \sigma^2)$, generando la envolvente de Rayleigh $R = \sqrt{I^2 + Q^2}$.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SLIDE 7: PRINCIPIO DE ERGODICIDAD
+           ==================================================================== -->
+      <section class="slide-pane" id="slide-7">
+        <div class="slide-topbar">
+          <div class="topbar-left">
+            <div class="badge-row">
+              <span class="badge-slide-id">Diapositiva 07</span>
+              <span class="badge-speaker">👤 Expositor: Fernando Gaimez</span>
+              <span class="badge-category">II. Marco Teórico</span>
+            </div>
+            <h2 class="slide-headline">Principio de Ergodicidad en Procesos WSS</h2>
+          </div>
+          <span class="slide-subheadline">¿Cómo un analizador de espectro de RF mide potencia con una sola
+            antena?</span>
+        </div>
+        <div class="slide-body">
+          <div class="split-2col">
+            <div class="math-card">
+              <div class="math-card-header">1. Promedios Temporales vs. Promedios de Conjunto</div>
+              <div class="formula-block-card">
+                <div class="formula-block-title">Definición de Ergodicidad en Media y Autocorrelación</div>
+                <div class="math-card-body">
+                  $$\langle x(t) \rangle = \lim_{T \to \infty} \frac{1}{2T}\int_{-T}^{T} x(t) dt = \mathbb{E}[X(t)] = 0
+                  \quad \text{c.s.}$$
+                  $$\mathcal{R}_x(\tau) = \lim_{T \to \infty} \frac{1}{2T}\int_{-T}^{T} x(t)x(t+\tau) dt = R_X(\tau)
+                  \quad \text{c.s.}$$
+                </div>
+                <div class="formula-interp-grid">
+                  <div class="formula-interp-item">
+                    <strong>Demostración Analítica</strong>
+                    Al integrar $x(t)x(t+\tau)$, el término de frecuencia doble $2f_0$ promedia a cero al tender $T \to
+                    \infty$, dejando únicamente $\frac{A^2}{2}\cos(2\pi f_0 \tau)$.
+                  </div>
+                  <div class="formula-interp-item">
+                    <strong>Convergencia "Casi Segura"</strong>
+                    Cualquier realización individual (salvo un conjunto de probabilidad cero) contiene la información
+                    estadística del ensamble infinito.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="math-card">
+              <div class="math-card-header">🔬 Relevancia Instrumental de Laboratorio</div>
+              <div class="telecom-card" style="margin-bottom: 0.8rem;">
+                <h5>Viabilidad Operativa en Equipos de Medición</h5>
+                En el laboratorio de la UNSA, un analizador de espectro (Keysight / Rohde & Schwarz) o un osciloscopio
+                digital no requiere $10,000$ antenas simultáneas para medir la Densidad Espectral de Potencia.
+              </div>
+              <div class="telecom-card">
+                <h5>Teorema de Wiener-Khinchin</h5>
+                Basta con muestrear un único barrido temporal de larga duración sobre un cable coaxial o antena
+                receptora: la correlación temporal calculada reproduce exactamente el comportamiento estadístico de todo
+                el ensamble.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SLIDE 8: METODOLOGIA EXPERIMENTAL Y PARAMETROS MATLAB
+           ==================================================================== -->
+      <section class="slide-pane" id="slide-8">
+        <div class="slide-topbar">
+          <div class="topbar-left">
+            <div class="badge-row">
+              <span class="badge-slide-id">Diapositiva 08</span>
+              <span class="badge-speaker">👤 Expositor: Zaul Uturunco</span>
+              <span class="badge-category">III. Metodología Experimental</span>
+            </div>
+            <h2 class="slide-headline">Parámetros del Sistema y Criterio de Muestreo en MATLAB</h2>
+          </div>
+          <span class="slide-subheadline">Condición de Nyquist-Shannon y suite modular de 6 módulos</span>
+        </div>
+        <div class="slide-body">
+          <div class="split-2col">
+            <div class="math-card">
+              <div class="math-card-header">⚙️ Parámetros Físicos Justificados</div>
+              <table style="width: 100%; border-collapse: collapse; font-size: 0.91rem; margin-top: 0.2rem;">
+                <tbody style="color: var(--text-main);">
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+                    <td style="padding: 0.45rem 0.2rem; font-weight: 600;">Amplitud pico ($A$)</td>
+                    <td style="color: var(--mint-neon); font-weight: 700;">$2.00\text{ V}$ (Potencia teórica $P_X =
+                      A^2/2 = 2.00\text{ W}$)</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+                    <td style="padding: 0.45rem 0.2rem; font-weight: 600;">Frecuencia fundamental ($f_0$)</td>
+                    <td style="color: var(--mint-neon); font-weight: 700;">$1000\text{ Hz}$ ($1\text{ kHz}$), Periodo
+                      $T_0 = 1\text{ ms}$</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+                    <td style="padding: 0.45rem 0.2rem; font-weight: 600;">Frecuencia muestreo ($f_s$)</td>
+                    <td style="color: var(--mint-neon); font-weight: 700;">$20000\text{ Hz}$ ($20\text{ kSa/s}$, $\Delta
+                      t = 50\,\mu\text{s}$)</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+                    <td style="padding: 0.45rem 0.2rem; font-weight: 600;">Resolución temporal</td>
+                    <td style="color: var(--mint-neon); font-weight: 700;">$20\text{ muestras/ciclo}$ ($f_s = 20 f_0 \gg
+                      2 f_0$)</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+                    <td style="padding: 0.45rem 0.2rem; font-weight: 600;">Ventana ensamble ($T_{\text{obs}}$)</td>
+                    <td style="color: var(--mint-neon); font-weight: 700;">$5\text{ ms}$ ($5\text{ periodos completos}$,
+                      $N=101$ pts)</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+                    <td style="padding: 0.45rem 0.2rem; font-weight: 600;">Ventana ergodicidad ($T_{\text{long}}$)</td>
+                    <td style="color: var(--mint-neon); font-weight: 700;">$1.0\text{ s}$ ($1000\text{ ciclos
+                      completos}$, $N=20001$ pts)</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0.45rem 0.2rem; font-weight: 600;">Semilla de reproducibilidad</td>
+                    <td style="color: var(--emerald-400); font-family: var(--font-mono); font-weight: 700;">rng(202608)
+                      (100% Determinista)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="math-card">
+              <div class="math-card-header">🧩 Estructura Modular de Software</div>
+              <ul style="font-size: 0.88rem; line-height: 1.65; color: var(--text-main); padding-left: 1.2rem;">
+                <li><strong style="color: var(--mint-neon);">config_parametros.m:</strong> Centraliza variables físicas,
+                  rutas y figuras.</li>
+                <li><strong style="color: var(--mint-neon);">generar_proceso_sinusoidal.m:</strong> Vectorización
+                  matricial $[M \times N]$ sin bucles for.</li>
+                <li><strong style="color: var(--mint-neon);">estimar_estadisticas_conjunto.m:</strong> Matriz
+                  $\hat{\mathbf{R}}_X = \frac{1}{M}\mathbf{X}^T\mathbf{X}$ y diagonales Toeplitz.</li>
+                <li><strong style="color: var(--mint-neon);">estimar_estadisticas_temporales.m:</strong> Estimador
+                  insesgado de autocorrelación con <code>xcorr</code>.</li>
+                <li><strong style="color: var(--mint-neon);">simular_contraejemplo.m:</strong> Rampa de modulación y
+                  caminata aleatoria.</li>
+                <li><strong style="color: var(--mint-neon);">main_simulacion_tema08.m:</strong> Pipeline maestro y
+                  exportador IEEE 300 DPI.</li>
+              </ul>
+              <div class="telecom-card" style="margin-top: 0.4rem; padding: 0.65rem 0.95rem;">
+                <span style="color: var(--mint-neon); font-weight: 700;">Criterio Nyquist-Shannon:</span> Al
+                sobremuestrear a $20\text{ kSa/s}$ ($10\times$ la tasa de Nyquist $2f_0 = 2\text{ kHz}$), se elimina el
+                aliasing espectral y se asegura precisión submilisegundo en las diagonales Toeplitz.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SLIDE 9: EXP 1: ENSAMBLE Y CORTE TRANSVERSAL
+           ==================================================================== -->
+      <section class="slide-pane" id="slide-9">
+        <div class="slide-topbar">
+          <div class="topbar-left">
+            <div class="badge-row">
+              <span class="badge-slide-id">Diapositiva 09</span>
+              <span class="badge-speaker">👤 Expositor: Zaul Uturunco</span>
+              <span class="badge-category">IV. Experimento 1</span>
+            </div>
+            <h2 class="slide-headline">Experimento 1: Ensamble de Trayectorias y Corte Transversal</h2>
+          </div>
+          <span class="slide-subheadline">De funciones determinísticas a Variable Aleatoria instantánea</span>
+        </div>
+        <div class="slide-body">
+          <!-- 1. Descripción del Experimento -->
+          <div class="exp-intro-banner">
+            <span class="exp-badge">Descripción</span>
+            <span>Se genera un ensamble de trayectorias sinusoidales con amplitud $A = 2\text{ V}$ y frecuencia $f_0 =
+              1000\text{ Hz}$, donde cada trayectoria posee una fase aleatoria independiente $\Theta_m \sim U(0, 2\pi)$.
+              Se efectúa un corte transversal en el instante fijo $t_0 = 1.25\text{ ms}$ para verificar el surgimiento
+              de la variable aleatoria instantánea.</span>
+          </div>
+
+          <!-- 2. Sección Dividida (Split 2-Col): Izquierda (Teoría + Código) / Derecha (Gráfica) -->
+          <div class="split-2col graph-focus">
+            <!-- Columna Izquierda: Teoría + Código -->
+            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+              <div class="math-card" style="padding: 0.65rem 0.85rem;">
+                <div class="math-card-header">📐 Formulación Matemática</div>
+                <div class="math-card-body" style="font-size: 0.88rem;">
+                  $$x_m(t) = A\cos(2\pi f_0 t + \Theta_m), \quad \Theta_m \sim U(0, 2\pi)$$
+                  $$\text{Corte } t_0 = 1.25\text{ ms} \implies X(t_0) \in [-A, A]$$
+                </div>
+              </div>
+
+              <!-- Código MATLAB que ejecuta la gráfica -->
+              <div class="code-snippet-box">
+                <div class="code-snippet-header">
+                  <span>MATLAB: generar_proceso_sinusoidal.m</span>
+                  <span>Vectorizado [M x N]</span>
+                </div>
+                <div class="code-snippet-body">
+                  <pre><code>function [X, Theta] = generar_proceso_sinusoidal(M, t, A, f0, seed)
+    rng(seed);
+    Theta = 2 * pi * rand(M, 1); % Fase aleatoria U(0, 2pi)
+    fase_total = 2 * pi * f0 * t + Theta; % Matriz M x N
+    X = A * cos(fase_total); % Realizaciones
+end</code></pre>
+                </div>
+              </div>
+            </div>
+
+            <!-- Columna Derecha: Gráfica Interactiva / MATLAB -->
+            <div class="chart-viewer-box">
+              <div class="chart-toolbar">
+                <div class="chart-tabs">
+                  <button class="chart-tab-btn chart-tab-interactive active">📊 Gráfico Interactivo (Chart.js)</button>
+                  <button class="chart-tab-btn chart-tab-matlab">📸 MATLAB 300 DPI Original</button>
+                </div>
+                <button class="btn-demo-run">▶ Ejecutar Simulación</button>
+              </div>
+              <div class="chart-canvas-area">
+                <canvas id="chart-exp1"></canvas>
+                <img src="figures/fig1_realizaciones_ensamble.png" class="matlab-img-view" alt="Figura 1 MATLAB">
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Sección Inferior: Análisis de la Gráfica y Código + Aplicación en Telecomunicaciones -->
+          <div class="exp-bottom-grid">
+            <div class="analysis-card">
+              <h5>🔍 Análisis de la Gráfica y Código Expuesto</h5>
+              Cada realización individual $x_m(t)$ es analítica y periódica. Sin embargo, al observar el corte
+              transversal en $t_0 = 1.25\text{ ms}$ (línea vertical), la colección resultante de puntos $\{x_1(t_0),
+              \dots, x_M(t_0)\}$ se distribuye como una variable aleatoria continua con función de densidad con forma de
+              bañera (arcsine distribution) delimitada estrictamente en $[-2, 2]\text{ V}$. El código aprovecha la
+              expansión implícita de matrices en MATLAB para computar $10,000$ ondas en menos de $15\text{ ms}$.
+            </div>
+            <div class="telecom-card">
+              <h5>📡 Aplicación en Telecomunicaciones</h5>
+              Modela el encendido asíncrono de receptores de portadora libre: al recibir la señal electromagnética sin
+              sincronización previa, la fase relativa observada depende de la distancia física en fracciones de
+              $\lambda$, obligando al receptor a modelar la portadora como un proceso aleatorio antes del enganche de
+              fase.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SLIDE 10: EXP 2: VERIFICACION DE ESTACIONARIEDAD WSS
+           ==================================================================== -->
+      <section class="slide-pane" id="slide-10">
+        <div class="slide-topbar">
+          <div class="topbar-left">
+            <div class="badge-row">
+              <span class="badge-slide-id">Diapositiva 10</span>
+              <span class="badge-speaker">👤 Expositor: Zaul Uturunco</span>
+              <span class="badge-category">IV. Experimento 2</span>
+            </div>
+            <h2 class="slide-headline">Experimento 2: Verificación de Estacionariedad en Sentido Amplio (WSS)</h2>
+          </div>
+          <span class="slide-subheadline">Media y Varianza de conjunto para $M \in \{100, 1000, 10000\}$
+            realizaciones</span>
+        </div>
+        <div class="slide-body">
+          <!-- 1. Descripción -->
+          <div class="exp-intro-banner">
+            <span class="exp-badge">Descripción</span>
+            <span>Evaluación computacional de la primera y segunda condición WSS en el dominio temporal mediante
+              estimadores muestrales de conjunto, comparando la convergencia para $M=100$, $M=1000$ y $M=10000$
+              realizaciones frente a las cotas teóricas $\mu_X = 0\text{ V}$ y $\sigma_X^2 = 2.0\text{ W}$.</span>
+          </div>
+
+          <!-- 2. Split: Izquierda (Teoría + Código) / Derecha (Gráfica) -->
+          <div class="split-2col graph-focus">
+            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+              <div class="math-card" style="padding: 0.65rem 0.85rem;">
+                <div class="math-card-header">📐 Estimadores Insesgados de Conjunto</div>
+                <div class="math-card-body" style="font-size: 0.85rem;">
+                  $$\hat{\mu}_X(t_n) = \frac{1}{M}\sum_{m=1}^{M} X_m(t_n) \longrightarrow 0\text{ V}$$
+                  $$\hat{\sigma}_X^2(t_n) = \frac{1}{M-1}\sum_{m=1}^M [X_m(t_n) - \hat{\mu}_X(t_n)]^2 \longrightarrow
+                  \frac{A^2}{2} = 2.0\text{ W}$$
+                </div>
+              </div>
+
+              <div class="code-snippet-box">
+                <div class="code-snippet-header">
+                  <span>MATLAB: estimar_estadisticas_conjunto.m</span>
+                  <span>Cálculo Vectorizado</span>
+                </div>
+                <div class="code-snippet-body">
+                  <pre><code>function [mu_hat, var_hat] = estimar_estadisticas_conjunto(X, t)
+    % Media y varianza insesgada sobre la dimension de realizaciones (1)
+    mu_hat = mean(X, 1);
+    var_hat = var(X, 0, 1);
+end</code></pre>
+                </div>
+              </div>
+            </div>
+
+            <!-- Gráfica Interactiva -->
+            <div class="chart-viewer-box">
+              <div class="chart-toolbar">
+                <div class="chart-tabs">
+                  <button class="chart-tab-btn chart-tab-interactive active">📊 Gráfico Interactivo (Chart.js)</button>
+                  <button class="chart-tab-btn chart-tab-matlab">📸 MATLAB 300 DPI Original</button>
+                </div>
+                <button class="btn-demo-run">▶ Ejecutar Simulación</button>
+              </div>
+              <div class="chart-canvas-area">
+                <canvas id="chart-exp2"></canvas>
+                <img src="figures/fig2_media_y_varianza_conjunto.png" class="matlab-img-view" alt="Figura 2 MATLAB">
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Análisis y Aplicación -->
+          <div class="exp-bottom-grid">
+            <div class="analysis-card">
+              <h5>🔍 Análisis de la Gráfica y Código Expuesto</h5>
+              Para $M=100$, las fluctuaciones de la media alcanzan picos de $\pm 0.15\text{ V}$ ($\text{MAE} =
+              0.0714\text{ V}$). Al escalar a $M=10,000$, la media se estabiliza en torno a cero con un MAE de apenas
+              $0.0111\text{ V}$. La varianza muestral converge a $1.999760\text{ W}$, registrando un error relativo del
+              <strong>$0.0120\%$</strong> respecto a los $2.000\text{ W}$ teóricos, demostrando numéricamente la
+              invarianza temporal de 1er y 2do orden.
+            </div>
+            <div class="telecom-card">
+              <h5>📡 Aplicación en Telecomunicaciones</h5>
+              Garantiza que la potencia media recibida por la antena permanezca constante a lo largo del tiempo,
+              permitiendo dimensionar con precisión los amplificadores de bajo ruido (LNA), el control automático de
+              ganancia (AGC) y los filtros paso-banda del frontal de RF.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SLIDE 11: EXP 3: MATRIZ DE AUTOCORRELACION 2D Y CORTE 1D
+           ==================================================================== -->
+      <section class="slide-pane" id="slide-11">
+        <div class="slide-topbar">
+          <div class="topbar-left">
+            <div class="badge-row">
+              <span class="badge-slide-id">Diapositiva 11</span>
+              <span class="badge-speaker">👤 Expositor: Fernando Castro</span>
+              <span class="badge-category">IV. Experimento 3</span>
+            </div>
+            <h2 class="slide-headline">Experimento 3: Autocorrelación Bidimensional y Corte 1D WSS</h2>
+          </div>
+          <span class="slide-subheadline">Estructura matricial de Toeplitz y superposición exacta con la curva
+            analítica</span>
+        </div>
+        <div class="slide-body">
+          <!-- 1. Descripción -->
+          <div class="exp-intro-banner">
+            <span class="exp-badge">Descripción</span>
+            <span>Cálculo matricial de la autocorrelación de conjunto para todos los pares de instantes $(t_1, t_2)$ y
+              extracción del corte unidimensional $R_X(\tau)$ promediando las diagonales paralelas de Toeplitz para
+              contrastar con la solución teórica $R_X(\tau) = 2\cos(2000\pi\tau)\text{ W}$.</span>
+          </div>
+
+          <!-- 2. Split: Izquierda (Teoría + Código) / Derecha (Gráfica) -->
+          <div class="split-2col graph-focus">
+            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+              <div class="math-card" style="padding: 0.65rem 0.85rem;">
+                <div class="math-card-header">📐 Formulación Matricial de Toeplitz</div>
+                <div class="math-card-body" style="font-size: 0.85rem;">
+                  $$\hat{\mathbf{R}}_X = \frac{1}{M}\mathbf{X}^T\mathbf{X} \in \mathbb{R}^{N \times N}$$
+                  $$\hat{R}_X(\tau_k) = \frac{1}{N - |k|}\sum \text{diag}(\hat{\mathbf{R}}_X, k) \approx
+                  \frac{A^2}{2}\cos(2\pi f_0 \tau)$$
+                </div>
+              </div>
+
+              <div class="code-snippet-box">
+                <div class="code-snippet-header">
+                  <span>MATLAB: Diagonales de Toeplitz</span>
+                  <span>Extracción Insesgada</span>
+                </div>
+                <div class="code-snippet-body">
+                  <pre><code>% Matriz completa de correlacion
+R_mat = (X' * X) / M;
+% Promedio a lo largo de diagonales con retardo fijo tau = k * dt
+for k = 1:length(lags_idx)
+    R_tau(k) = mean(diag(R_mat, lags_idx(k)));
+end</code></pre>
+                </div>
+              </div>
+            </div>
+
+            <!-- Gráfica Interactiva con Mapa de Calor Plotly -->
+            <div class="chart-viewer-box">
+              <div class="chart-toolbar">
+                <div class="chart-tabs">
+                  <button class="chart-tab-btn chart-tab-interactive active">📊 Corte 1D (Chart.js)</button>
+                  <button class="chart-tab-btn chart-tab-heatmap">🗺️ Matriz 2D Toeplitz (Plotly)</button>
+                  <button class="chart-tab-btn chart-tab-matlab">📸 MATLAB 300 DPI Original</button>
+                </div>
+                <button class="btn-demo-run">▶ Ejecutar Simulación</button>
+              </div>
+              <div class="chart-canvas-area" style="position: relative;">
+                <canvas id="chart-exp3-1d"></canvas>
+                <div id="plotly-exp3-2d" class="plotly-container" style="width: 100%; height: 100%; display: none;">
+                </div>
+                <img src="figures/fig3_autocorrelacion_conjunto_2d_1d.png" class="matlab-img-view"
+                  alt="Figura 3 MATLAB">
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Análisis y Aplicación -->
+          <div class="exp-bottom-grid">
+            <div class="analysis-card">
+              <h5>🔍 Análisis de la Gráfica y Código Expuesto</h5>
+              La matriz bidimensional $R_X(t_1, t_2)$ muestra franjas estriadas diagonales homogéneas y simétricas
+              respecto a la diagonal principal ($t_1 = t_2$). El valor de correlación depende solo de la diferencia
+              $|t_2 - t_1|$. El corte unidimensional $R_X(\tau)$ para $M=10,000$ calca la curva teórica en todo el
+              soporte $\tau \in [-5, 5]\text{ ms}$ con un RMSE de apenas <strong>$6.2266 \times 10^{-3}\text{
+                W}$</strong>.
+            </div>
+            <div class="telecom-card">
+              <h5>📡 Aplicación en Telecomunicaciones</h5>
+              Esta simetría diagonal es el fundamento matemático de los <strong>filtros adaptados (Matched
+                Filters)</strong> y ecualizadores de canal, permitiendo maximizar la relación señal a ruido (SNR) en el
+              instante de muestreo sin importar el retardo de propagación inicial.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SLIDE 12: EXP 4: VALIDACION DE ERGODICIDAD
+           ==================================================================== -->
+      <section class="slide-pane" id="slide-12">
+        <div class="slide-topbar">
+          <div class="topbar-left">
+            <div class="badge-row">
+              <span class="badge-slide-id">Diapositiva 12</span>
+              <span class="badge-speaker">👤 Expositor: Fernando Castro</span>
+              <span class="badge-category">IV. Experimento 4</span>
+            </div>
+            <h2 class="slide-headline">Experimento 4: Validación Experimental de la Ergodicidad</h2>
+          </div>
+          <span class="slide-subheadline">10,000 realizaciones simultáneas frente a 1 sola trayectoria continua ($T =
+            1.0\text{ s}$)</span>
+        </div>
+        <div class="slide-body">
+          <!-- 1. Descripción -->
+          <div class="exp-intro-banner">
+            <span class="exp-badge">Descripción</span>
+            <span>Comprobación cuantitativa de la propiedad de ergodicidad en media y autocorrelación: se compara la
+              solución analítica frente al promedio de conjunto ($M=10,000$) y el promedio temporal obtenido sobre una
+              única trayectoria continua de larga duración ($1000$ ciclos, $T = 1.0\text{ s}$).</span>
+          </div>
+
+          <!-- 2. Split: Izquierda (Teoría + Código) / Derecha (Gráfica) -->
+          <div class="split-2col graph-focus">
+            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+              <div class="math-card" style="padding: 0.65rem 0.85rem;">
+                <div class="math-card-header">📐 Estimador Temporal Insesgado (xcorr)</div>
+                <div class="math-card-body" style="font-size: 0.83rem;">
+                  $$\langle x(t) \rangle = \frac{1}{N_{\text{long}}}\sum_{n=1}^{N_{\text{long}}} x[n] \longrightarrow
+                  0\text{ V}$$
+                  $$\hat{\mathcal{R}}_x[k] = \frac{1}{N_{\text{long}} - |k|}\sum_{n=1}^{N_{\text{long}} - |k|} x[n]
+                  x[n+k] \longrightarrow R_X(\tau)$$
+                </div>
+              </div>
+
+              <div class="code-snippet-box">
+                <div class="code-snippet-header">
+                  <span>MATLAB: estimar_estadisticas_temporales.m</span>
+                  <span>1 Sola Trayectoria (T = 1.0 s)</span>
+                </div>
+                <div class="code-snippet-body">
+                  <pre><code>function [mu_temp, var_temp, R_temp, lags_temp] = estimar_estadisticas_temporales(x_single, t_single, max_lag_sec)
+    mu_temp = mean(x_single);
+    var_temp = var(x_single, 1);
+    max_lag_samples = round(max_lag_sec / dt);
+    [R_raw, lags_idx] = xcorr(x_single, max_lag_samples, 'unbiased');
+    R_temp = R_raw; lags_temp = lags_idx * dt;
+end</code></pre>
+                </div>
+              </div>
+            </div>
+
+            <!-- Gráfica Interactiva -->
+            <div class="chart-viewer-box">
+              <div class="chart-toolbar">
+                <div class="chart-tabs">
+                  <button class="chart-tab-btn chart-tab-interactive active">📊 Gráfico Interactivo (Chart.js)</button>
+                  <button class="chart-tab-btn chart-tab-matlab">📸 MATLAB 300 DPI Original</button>
+                </div>
+                <button class="btn-demo-run">▶ Ejecutar Simulación</button>
+              </div>
+              <div class="chart-canvas-area">
+                <canvas id="chart-exp4"></canvas>
+                <img src="figures/fig4_ergodicidad_conjunto_vs_temporal.png" class="matlab-img-view"
+                  alt="Figura 4 MATLAB">
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Análisis y Aplicación -->
+          <div class="exp-bottom-grid">
+            <div class="analysis-card">
+              <h5>🔍 Análisis de la Gráfica y Código Expuesto</h5>
+              La media temporal obtenida sobre la trayectoria única es de $-1.55 \times 10^{-5}\text{ V} \approx
+              -0.000016\text{ V}$ (virtualmente cero). La potencia temporal es $1.999905\text{ W}$, con un error
+              relativo de apenas <strong>$0.0048\%$</strong> frente a la teoría. El RMSE entre la autocorrelación
+              temporal y la teórica es de tan solo <strong>$0.000217\text{ W}$</strong>, superando incluso la precisión
+              del ensamble discreto.
+            </div>
+            <div class="telecom-card">
+              <h5>📡 Aplicación en Telecomunicaciones</h5>
+              Justifica físicamente el funcionamiento de los <strong>analizadores de espectro y medidores de potencia
+                RF</strong> en laboratorio: un ingeniero conecta una sonda a un solo puerto coaxial y, integrando en el
+              tiempo, obtiene la densidad espectral de potencia representativa de todo el proceso.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SLIDE 13: EXP 5: CONTRAEJEMPLO NO ESTACIONARIO
+           ==================================================================== -->
+      <section class="slide-pane" id="slide-13">
+        <div class="slide-topbar">
+          <div class="topbar-left">
+            <div class="badge-row">
+              <span class="badge-slide-id">Diapositiva 13</span>
+              <span class="badge-speaker">👤 Expositor: Fernando Castro</span>
+              <span class="badge-category">IV. Experimento 5</span>
+            </div>
+            <h2 class="slide-headline">Experimento 5: Contraejemplo No Estacionario (Falla de WSS)</h2>
+          </div>
+          <span class="slide-subheadline">Rampa de amplitud y caminata aleatoria / modelo de ruido de fase en
+            osciladores</span>
+        </div>
+        <div class="slide-body">
+          <!-- 1. Descripción -->
+          <div class="exp-intro-banner">
+            <span class="exp-badge">Descripción</span>
+            <span>Simulación de procesos que violan deliberadamente la condición WSS: modulación en rampa temporal $Y(t)
+              = A(1+\alpha t)\cos(2\pi f_0 t + \Theta)$ con $\alpha = 600\text{ s}^{-1}$ y una caminata aleatoria $W[n]
+              = \sum Z[k]$ representativa de la acumulación de ruido de fase en osciladores locales libres.</span>
+          </div>
+
+          <!-- 2. Split: Izquierda (Teoría + Código) / Derecha (Gráfica) -->
+          <div class="split-2col graph-focus">
+            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+              <div class="math-card" style="padding: 0.65rem 0.85rem;">
+                <div class="math-card-header">📐 Mecanismo de Ruptura de WSS</div>
+                <div class="math-card-body" style="font-size: 0.82rem;">
+                  $$\mathbb{E}[Y(t)] = 0\text{ V}, \quad \sigma_Y^2(t) = \frac{A^2}{2}(1+\alpha t)^2$$
+                  $$R_Y(t_1, t_2) = \frac{A^2}{2}(1+\alpha t_1)(1+\alpha t_2)\cos(2\pi f_0(t_2-t_1))$$
+                  $$\text{Caminata Aleatoria: } \sigma_W^2[n] = n \sigma_Z^2 \propto n$$
+                </div>
+              </div>
+
+              <div class="code-snippet-box">
+                <div class="code-snippet-header">
+                  <span>MATLAB: simular_contraejemplo.m</span>
+                  <span>Rampa y Caminata Aleatoria</span>
+                </div>
+                <div class="code-snippet-body">
+                  <pre><code>envolvente = 1 + alpha_ramp * t;
+Y = (A .* repmat(envolvente, M, 1)) .* cos(2*pi*f0*t + Theta);
+var_Y = var(Y, 0, 1); % Varianza temporal cuadratica
+% Caminata aleatoria (ruido de fase acumulado)
+W = cumsum(0.1 * randn(M, N), 2);</code></pre>
+                </div>
+              </div>
+            </div>
+
+            <!-- Gráfica Interactiva -->
+            <div class="chart-viewer-box">
+              <div class="chart-toolbar">
+                <div class="chart-tabs">
+                  <button class="chart-tab-btn chart-tab-interactive active">📊 Gráfico Interactivo (Chart.js)</button>
+                  <button class="chart-tab-btn chart-tab-matlab">📸 MATLAB 300 DPI Original</button>
+                </div>
+                <button class="btn-demo-run">▶ Ejecutar Simulación</button>
+              </div>
+              <div class="chart-canvas-area">
+                <canvas id="chart-exp5"></canvas>
+                <img src="figures/fig5_contraejemplo_no_estacionario.png" class="matlab-img-view" alt="Figura 5 MATLAB">
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Análisis y Aplicación -->
+          <div class="exp-bottom-grid">
+            <div class="analysis-card">
+              <h5>🔍 Análisis de la Gráfica y Código Expuesto</h5>
+              Aunque la media de $Y(t)$ sigue siendo nula por la uniformidad de la fase, la varianza de conjunto se
+              dispara cuadráticamente de $1.9961\text{ W}$ en $t=0$ hasta $31.9378\text{ W}$ en $t=5\text{ ms}$
+              ($16\times$ de incremento). La matriz $R_Y(t_1, t_2)$ destruye por completo las bandas diagonales de
+              Toeplitz al depender del producto $t_1 \cdot t_2$. Asimismo, la dispersión del paseo aleatorio crece como
+              $\sqrt{n}$, demostrando la no estacionariedad.
+            </div>
+            <div class="telecom-card">
+              <h5>📡 Aplicación en Telecomunicaciones</h5>
+              El paseo aleatorio describe fielmente el <strong>ruido de fase (Phase Noise)</strong> en osciladores
+              locales de RF (Demir et al., 2000). En modulaciones densas como 1024-QAM (Wi-Fi 7) o 5G-NR, la no
+              estacionariedad ensancha la línea espectral de la portadora y causa rotación aleatoria de la constelación
+              si no se compensa con lazos de seguimiento digital PLL.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SLIDE 14: EXP 6: CONVERGENCIA MONTE CARLO
+           ==================================================================== -->
+      <section class="slide-pane" id="slide-14">
+        <div class="slide-topbar">
+          <div class="topbar-left">
+            <div class="badge-row">
+              <span class="badge-slide-id">Diapositiva 14</span>
+              <span class="badge-speaker">👤 Expositor: Benjamin Quispe</span>
+              <span class="badge-category">IV. Experimento 6</span>
+            </div>
+            <h2 class="slide-headline">Experimento 6: Convergencia Monte Carlo y Teorema del Límite Central</h2>
+          </div>
+          <span class="slide-subheadline">Decaimiento asintótico del error empírico a una tasa
+            $\mathcal{O}(1/\sqrt{M})$</span>
+        </div>
+        <div class="slide-body">
+          <!-- 1. Descripción -->
+          <div class="exp-intro-banner">
+            <span class="exp-badge">Descripción</span>
+            <span>Evaluación cuantitativa del error absoluto medio de la media (MAE) y del error cuadrático medio de la
+              autocorrelación (RMSE) frente al tamaño del ensamble $M \in [50, 10000]$ en escala logarítmica para
+              validar la tasa teórica predicha por el Teorema del Límite Central.</span>
+          </div>
+
+          <!-- 2. Split: Izquierda (Teoría + Código) / Derecha (Gráfica) -->
+          <div class="split-2col graph-focus">
+            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+              <div class="math-card" style="padding: 0.65rem 0.85rem;">
+                <div class="math-card-header">📐 Ley de los Grandes Números & TLC</div>
+                <div class="math-card-body" style="font-size: 0.82rem;">
+                  $$\text{Var}(\hat{\mu}_X) = \frac{\sigma_X^2}{M} \implies \text{Error Cuantitativo} \propto
+                  \frac{1}{\sqrt{M}}$$
+                  $$\log(\text{Error}) \approx -\frac{1}{2}\log(M) + \text{constante}$$
+                </div>
+              </div>
+
+              <div class="code-snippet-box">
+                <div class="code-snippet-header">
+                  <span>MATLAB: Bucle de Convergencia</span>
+                  <span>Escala Logarítmica</span>
+                </div>
+                <div class="code-snippet-body">
+                  <pre><code>M_vector = [50, 100, 200, 500, 1000, 2000, 5000, 10000];
+for idx = 1:length(M_vector)
+    [X_sub, ~] = generar_proceso_sinusoidal(M_vector(idx), t, A, f0, seed);
+    [mu_sub, ~, ~, R_sub] = estimar_estadisticas_conjunto(X_sub, t);
+    mae_mu(idx) = mean(abs(mu_sub));
+    rmse_R(idx) = sqrt(mean((R_sub - R_teorica).^2));
+end</code></pre>
+                </div>
+              </div>
+            </div>
+
+            <!-- Gráfica Interactiva -->
+            <div class="chart-viewer-box">
+              <div class="chart-toolbar">
+                <div class="chart-tabs">
+                  <button class="chart-tab-btn chart-tab-interactive active">📊 Gráfico Interactivo (Chart.js)</button>
+                  <button class="chart-tab-btn chart-tab-matlab">📸 MATLAB 300 DPI Original</button>
+                </div>
+                <button class="btn-demo-run">▶ Ejecutar Simulación</button>
+              </div>
+              <div class="chart-canvas-area">
+                <canvas id="chart-exp6"></canvas>
+                <img src="figures/fig6_convergencia_monte_carlo.png" class="matlab-img-view" alt="Figura 6 MATLAB">
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Análisis y Aplicación -->
+          <div class="exp-bottom-grid">
+            <div class="analysis-card">
+              <h5>🔍 Análisis de la Gráfica y Código Expuesto</h5>
+              En el gráfico log-log, las curvas del error de media y de autocorrelación siguen fielmente la línea de
+              referencia con pendiente asintótica de <strong>$-0.5$</strong> ($\mathcal{O}(1/\sqrt{M})$). Al pasar de
+              $M=100$ a $M=10,000$ (factor de $100\times$), los errores se reducen en un factor de $10\times$ (de
+              $0.073\text{ W}$ a $0.0062\text{ W}$), verificando empíricamente la cota del Teorema del Límite Central.
+            </div>
+            <div class="telecom-card">
+              <h5>📡 Aplicación en Telecomunicaciones</h5>
+              Permite dimensionar emuladores de canal y simuladores de tasa de error de bit (BER) en enlaces 5G y
+              comunicaciones satelitales: para validar una probabilidad de error de bit de $10^{-6}$ con intervalo de
+              confianza estadístico, se requiere generar un mínimo de $10^8$ símbolos independientes.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SLIDE 15: APLICACIONES EN INGENIERIA EN TELECOMUNICACIONES
+           ==================================================================== -->
+      <section class="slide-pane" id="slide-15">
+        <div class="slide-topbar">
+          <div class="topbar-left">
+            <div class="badge-row">
+              <span class="badge-slide-id">Diapositiva 15</span>
+              <span class="badge-speaker">👤 Expositor: Benjamin Quispe</span>
+              <span class="badge-category">V. Casos de Ingeniería</span>
+            </div>
+            <h2 class="slide-headline">Aplicaciones Directas en Telecomunicaciones</h2>
+          </div>
+          <span class="slide-subheadline">De la teoría estadística a la ingeniería de radio, redes e
+            instrumentación</span>
+        </div>
+        <div class="slide-body">
+          <div class="telecom-apps-grid">
+            <div class="app-card-detailed">
+              <div class="app-card-header-badge">
+                <span class="app-card-title">1. Sincronización de Portadora en SDR</span>
+                <span class="app-tag">RF Front-End / SDR</span>
+              </div>
+              <p class="app-card-body-text">
+                En receptores SDR (HackRF One / USRP B210), la portadora llega con fase desconocida $\Theta \sim U(0,
+                2\pi)$. La invarianza WSS y la incorrelación mutua $\mathbb{E}[I \cdot Q] = 0$ garantizan que el
+                discriminador de fase del lazo Costas converja al enganche coherente sin línea de vista previa.
+              </p>
+              <div class="app-card-formula-highlight">
+                Discriminador de fase: $\Delta\Theta = \arctan(Q(t) / I(t)) \longrightarrow 0$
+              </div>
+            </div>
+
+            <div class="app-card-detailed">
+              <div class="app-card-header-badge">
+                <span class="app-card-title">2. Analizadores de Espectro (RTSA / Welch)</span>
+                <span class="app-tag">Instrumentación / DSP</span>
+              </div>
+              <p class="app-card-body-text">
+                Los analizadores de espectro en tiempo real (Keysight N9020B / Rohde & Schwarz FSW) calculan la Densidad
+                Espectral de Potencia mediante promediado de periodogramas (Welch). La ergodicidad es la única base
+                física que valida medir sobre una sola antena en lugar de $10,000$ receptores simultáneos.
+              </p>
+              <div class="app-card-formula-highlight">
+                Wiener-Khinchin: $S_X(f) = \mathcal{F}\{\mathcal{R}_x(\tau)\} \equiv \mathcal{F}\{R_X(\tau)\}$
+              </div>
+            </div>
+
+            <div class="app-card-detailed">
+              <div class="app-card-header-badge">
+                <span class="app-card-title">3. Canales WSSUS en Redes Móviles 5G / 6G</span>
+                <span class="app-tag">3GPP Rel-18 / MIMO Masivo</span>
+              </div>
+              <p class="app-card-body-text">
+                El estándar 5G-NR adopta el modelo WSSUS (Bello, 1963). Durante la ventana de coherencia temporal ($T_c
+                \approx 10\text{--}50\text{ ms}$), el canal inalámbrico se asume localmente WSS, lo que permite a la
+                estación gNB estimar la matriz de canal CSI y proyectar haces directivos de Beamforming masivo.
+              </p>
+              <div class="app-card-formula-highlight">
+                Correlación canal 5G: $\mathbb{E}[h(t_1, \tau_1) h^*(t_2, \tau_2)] = R_h(\Delta t, \tau_1)\delta(\tau_1
+                - \tau_2)$
+              </div>
+            </div>
+
+            <div class="app-card-detailed">
+              <div class="app-card-header-badge">
+                <span class="app-card-title">4. Mitigación de Ruido de Fase en Wi-Fi 7</span>
+                <span class="app-tag">IEEE 802.11be / Wi-Fi 7</span>
+              </div>
+              <p class="app-card-body-text">
+                La caminata aleatoria no estacionaria modela con exactitud el ruido de fase acumulado en osciladores
+                locales RF (Demir et al., 2000). En constelaciones hiperdensas como 1024-QAM y 4096-QAM, la rotación
+                angular aleatoria exige algoritmos de corrección digital de error común (CPE) para proteger el BER.
+              </p>
+              <div class="app-card-formula-highlight">
+                Deriva de fase en PLL: $\theta[n] = \sum_{k=1}^n \Delta\theta_k \implies \sigma_\theta^2[n] \propto n$
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SLIDE 16: CONCLUSIONES Y RONDA DE PREGUNTAS (5 MIN)
+           ==================================================================== -->
+      <section class="slide-pane" id="slide-16">
+        <div class="slide-topbar">
+          <div class="topbar-left">
+            <div class="badge-row">
+              <span class="badge-slide-id">Diapositiva 16</span>
+              <span class="badge-speaker">👤 Expositor: Todo el Equipo</span>
+              <span class="badge-category">VI. Conclusiones y Defensa</span>
+            </div>
+            <h2 class="slide-headline">Conclusiones Finales y Sesión de Preguntas</h2>
+          </div>
+          <span class="slide-subheadline">Resumen ejecutivo cuantitativo y ronda de preguntas del docente (5 min)</span>
+        </div>
+        <div class="slide-body">
+          <div class="split-2col">
+            <div class="math-card">
+              <div class="math-card-header">🎯 Hallazgos Cuantitativos Validados</div>
+              <ul style="font-size: 0.93rem; line-height: 1.7; color: var(--text-main); padding-left: 1.3rem;">
+                <li><strong>Estacionariedad WSS Demostrada:</strong> Media de conjunto empírica $\hat{\mu} \approx
+                  0.011\text{ V}$ y potencia $1.999760\text{ W}$ con un error relativo de apenas
+                  <strong>$0.0120\%$</strong> para $M=10,000$ realizaciones en MATLAB.
+                </li>
+                <li><strong>Ergodicidad Verificada:</strong> Una sola onda temporal continua ($T=1.0\text{ s}$)
+                  reprodujo
+                  la función teórica de autocorrelación con un RMSE de <strong>$2.17 \times 10^{-4}\text{ W}$</strong> y
+                  error de potencia
+                  de solo <strong>$0.0048\%$</strong>.</li>
+                <li><strong>Ruptura de WSS Cuantificada:</strong> La no estacionariedad multiplicó por $16\times$ la
+                  varianza instantánea ($1.99\text{ W} \to 31.94\text{ W}$) y destruyó la simetría diagonal de Toeplitz
+                  en $R_Y(t_1, t_2)$.</li>
+                <li><strong>Tasa Asintótica TLC:</strong> Los errores empíricos decaen siguiendo fielmente la pendiente
+                  teórica
+                  $\mathcal{O}(1/\sqrt{M})$ en escala logarítmica.</li>
+              </ul>
+              <div class="telecom-card" style="margin-top: 0.6rem;">
+                <strong style="color: var(--mint-neon);">Impacto Profesional:</strong> Los códigos desarrollados en
+                MATLAB constituyen una suite completa, modular y vectorizada para el análisis de señales aleatorias en
+                telecomunicaciones modernas.
+              </div>
+            </div>
+
+            <div class="math-card"
+              style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.05); padding: 2rem 1.5rem;">
+              <div style="font-size: 3.2rem; margin-bottom: 0.6rem;">🎓</div>
+              <h3 style="color: #fff; font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem;">¡Muchas Gracias por
+                su Atención!</h3>
+              <div style="font-size: 0.88rem; color: var(--text-muted); max-width: 440px; line-height: 1.55;">
+                <em>"En ingeniería en telecomunicaciones, la aleatoriedad no es una limitación: es la condición física
+                  gobernante sobre la cual se diseñan los sistemas de transmisión del mundo moderno."</em>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- FOOTER DE NAVEGACION DE LA PRESENTACION -->
+  <footer class="footer-deck">
+    <div class="slide-counter-badge" style="display: none;">
+      <span>Diapositiva</span>
+      <span id="current-slide-num" class="active-num">1</span>
+      <span>/</span>
+      <span id="total-slides-num">16</span>
+    </div>
+
+    <div class="deck-nav-buttons">
+      <button id="btn-prev" class="btn-deck-nav" disabled>
+        <span>←</span> <span>Anterior</span>
+      </button>
+      <button id="btn-next" class="btn-deck-nav">
+        <span>Siguiente</span> <span>→</span>
+      </button>
+    </div>
+
+    <div style="font-size: 0.76rem; color: var(--text-dim); font-family: var(--font-mono);">
+      Controles: <kbd
+        style="background: rgba(255,255,255,0.1); padding: 0.15rem 0.4rem; border-radius: 4px; color: var(--mint-neon);">←</kbd>
+      <kbd
+        style="background: rgba(255,255,255,0.1); padding: 0.15rem 0.4rem; border-radius: 4px; color: var(--mint-neon);">→</kbd>
+      <kbd
+        style="background: rgba(255,255,255,0.1); padding: 0.15rem 0.4rem; border-radius: 4px; color: var(--mint-neon);">Espacio</kbd>
+      | <kbd
+        style="background: rgba(255,255,255,0.1); padding: 0.15rem 0.4rem; border-radius: 4px; color: var(--mint-neon);">F</kbd>
+      Pantalla Completa | <kbd
+        style="background: rgba(255,255,255,0.1); padding: 0.15rem 0.4rem; border-radius: 4px; color: var(--mint-neon);">O</kbd>
+      Índice
+    </div>
+  </footer>
+
+  <!-- MODAL DE INDICE DE DIAPOSITIVAS (SIDEBAR OVERVIEW) -->
+  <div id="sidebar-modal" class="sidebar-modal">
+    <div class="sidebar-modal-header">
+      <div style="display: flex; align-items: center; gap: 0.6rem;">
+        <span style="font-size: 1.2rem;">📑</span>
+        <h3 style="color: #fff; font-size: 1.2rem; font-weight: 800;">Índice General de la Presentación</h3>
+      </div>
+      <button id="btn-close-sidebar" class="btn-header" style="font-size: 0.85rem;">
+        ✕ Cerrar (Esc)
+      </button>
+    </div>
+    <div id="sidebar-grid" class="sidebar-cards-grid">
+      <!-- Se genera dinámicamente con JavaScript -->
+    </div>
+  </div>
+
+  <!-- Scripts del sistema -->
+  <script src="js/data-simulacion.js"></script>
+  <script src="js/stochastic-sim.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>

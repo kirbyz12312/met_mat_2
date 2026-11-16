@@ -1,0 +1,1161 @@
+/* ==========================================================================
+   TIF GRUPO 02 - TEMA 08: PROCESOS ESTOCASTICOS EN TELECOMUNICACIONES
+   Estilo y Animaciones: Verde Tecnológico / Emerald High-Tech (UNSA - EPIT)
+   Inspirado en la Arquitectura y Fluidez del Proyecto FOURIER
+   ========================================================================== */
+
+:root {
+  --bg-dark: #030712;       /* slate-950 ultra oscuro */
+  --bg-card: #0b0f19;       /* slate-900 translúcido */
+  --bg-card-alt: #111827;   /* slate-850 */
+  --border-slate: #1e293b;  /* slate-800 */
+  --border-hover: rgba(52, 211, 153, 0.45);
+  
+  --text-main: #f8fafc;     /* slate-50 */
+  --text-muted: #94a3b8;    /* slate-400 */
+  --text-dim: #64748b;      /* slate-500 */
+  
+  /* Paleta Verde Tecnológico / Emerald Telecom */
+  --emerald-300: #6ee7b7;
+  --emerald-400: #34d399;
+  --emerald-500: #10b981;
+  --emerald-600: #059669;
+  --mint-neon: #00f5a0;
+  --teal-400: #2dd4bf;
+  
+  --emerald-glow: rgba(16, 185, 129, 0.35);
+  --mint-glow: rgba(0, 245, 160, 0.3);
+  
+  --blue-500: #3b82f6;
+  --amber-400: #fbbf24;
+  --rose-400: #fb7185;
+  --purple-400: #c084fc;
+  
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Fira Code', 'JetBrains Mono', Consolas, monospace;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  overflow: hidden;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(51, 65, 85, 0.8);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--emerald-500);
+}
+
+/* Canvas de Fondo Dinámico (Ondas sinusoidales fasoriales y barras armónicas) */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.85;
+}
+
+/* Resplandores ambientales decorativos */
+.ambient-glow-1 {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 520px;
+  height: 520px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(55px);
+}
+.ambient-glow-2 {
+  position: fixed;
+  bottom: 12%;
+  right: 15%;
+  width: 440px;
+  height: 440px;
+  background: radial-gradient(circle, rgba(0, 245, 160, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(55px);
+}
+
+/* --------------------------------------------------------------------------
+   HEADER PROGRESS & BARRA DE CONTROL
+   -------------------------------------------------------------------------- */
+.header-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: rgba(11, 15, 25, 0.88);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border-slate);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  z-index: 50;
+}
+
+.brand-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.brand-badge {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: var(--mint-neon);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.22rem 0.65rem;
+  border-radius: 6px;
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.brand-badge .pulse-dot {
+  width: 6.5px;
+  height: 6.5px;
+  background-color: var(--mint-neon);
+  border-radius: 50%;
+  box-shadow: 0 0 9px var(--mint-neon);
+  animation: pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.8); }
+}
+
+.brand-title {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.brand-title .sep {
+  color: var(--text-dim);
+}
+
+/* Temporizador Central Oficial */
+.timer-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(17, 24, 39, 0.92);
+  border: 1px solid var(--border-slate);
+  padding: 0.25rem 0.85rem;
+  border-radius: 9999px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+
+.timer-label {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.timer-text {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--mint-neon);
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 10px rgba(0, 245, 160, 0.45);
+}
+
+.timer-text.warning {
+  color: var(--amber-400);
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.45);
+}
+
+.timer-text.danger {
+  color: var(--rose-400);
+  text-shadow: 0 0 10px rgba(251, 113, 133, 0.6);
+  animation: pulse-green 1s infinite;
+}
+
+.timer-btn-icon {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.timer-btn-icon:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+/* Botones Superiores de Acción */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.btn-header {
+  background: rgba(17, 24, 39, 0.78);
+  border: 1px solid var(--border-slate);
+  color: var(--text-muted);
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.btn-header:hover {
+  background: rgba(30, 41, 59, 0.95);
+  border-color: var(--emerald-400);
+  color: #fff;
+  box-shadow: 0 0 15px -3px var(--emerald-glow);
+}
+
+/* Barra de Progreso Lineal */
+.progress-line-track {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  background: rgba(30, 41, 59, 0.4);
+  z-index: 49;
+}
+
+.progress-line-bar {
+  height: 100%;
+  width: 6%;
+  background: linear-gradient(90deg, #059669, #10b981, #00f5a0);
+  box-shadow: 0 0 12px var(--mint-neon);
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --------------------------------------------------------------------------
+   ESCENARIO PRINCIPAL (VIEWPORT 16:9 CENTRADO)
+   -------------------------------------------------------------------------- */
+.presentation-container {
+  position: fixed;
+  top: 58px;
+  bottom: 54px;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1.4rem;
+  z-index: 10;
+}
+
+.deck-stage {
+  width: 100%;
+  max-width: 1300px;
+  height: 100%;
+  max-height: 740px;
+  position: relative;
+  background: rgba(11, 15, 25, 0.75);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-slate);
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 35px -5px rgba(16, 185, 129, 0.12);
+  overflow: hidden;
+}
+
+/* Diapositiva Individual */
+.slide-pane {
+  position: absolute;
+  inset: 0;
+  padding: 1.5rem 2.2rem;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(14px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  overflow-y: auto;
+}
+
+.slide-pane.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* --------------------------------------------------------------------------
+   HEADER DE CADA DIAPOSITIVA (TOPBAR)
+   -------------------------------------------------------------------------- */
+.slide-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.9rem;
+  border-bottom: 1px solid rgba(30, 41, 59, 0.65);
+  padding-bottom: 0.65rem;
+}
+
+.topbar-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.badge-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.badge-slide-id {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: var(--mint-neon);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.15rem 0.55rem;
+  border-radius: 6px;
+}
+
+.badge-speaker {
+  background: rgba(5, 150, 105, 0.15);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  color: var(--emerald-300);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.badge-category {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid var(--border-slate);
+  color: #94a3b8;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: 6px;
+}
+
+.slide-headline {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.slide-subheadline {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   LAYOUT DE CONTENIDO Y TARJETAS
+   -------------------------------------------------------------------------- */
+.slide-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.split-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.1rem;
+  align-items: stretch;
+}
+
+.split-2col.graph-focus {
+  grid-template-columns: 0.9fr 1.1fr;
+}
+
+/* Tarjeta KaTeX de Fórmulas Matemáticas */
+.math-card {
+  background: rgba(17, 24, 39, 0.75);
+  border: 1px solid var(--border-slate);
+  border-radius: 10px;
+  padding: 0.85rem 1.05rem;
+  backdrop-filter: blur(8px);
+}
+
+.math-card-header {
+  font-size: 0.74rem;
+  font-family: var(--font-mono);
+  color: var(--mint-neon);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.45rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.math-card-body {
+  font-size: 0.90rem;
+  text-align: center;
+  color: #fff;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.2rem 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(16, 185, 129, 0.4) transparent;
+}
+
+.math-card-body .katex-display {
+  margin: 0.25rem 0 !important;
+}
+
+.math-card-body .katex-display > .katex {
+  max-width: 100%;
+}
+
+/* Alert Box de Telecomunicaciones */
+.telecom-card {
+  background: rgba(16, 185, 129, 0.06);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-left: 4px solid var(--emerald-500);
+  border-radius: 8px;
+  padding: 0.8rem 0.95rem;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--text-main);
+}
+
+.telecom-card h5 {
+  font-size: 0.83rem;
+  font-weight: 700;
+  color: var(--mint-neon);
+  margin-bottom: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Tarjetas de Fórmulas con Interpretación y Uso */
+.formula-block-card {
+  background: rgba(11, 15, 25, 0.9);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: 8px;
+  padding: 0.75rem 0.9rem;
+  margin-bottom: 0.6rem;
+}
+
+.formula-block-title {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--mint-neon);
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.formula-interp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  font-size: 0.78rem;
+}
+
+.formula-interp-item {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.45;
+}
+
+.formula-interp-item strong {
+  color: var(--emerald-300);
+  display: block;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  margin-bottom: 0.15rem;
+}
+
+/* Diagrama Gráfico Visual (Visual Card) */
+.visual-diagram-box {
+  background: rgba(8, 12, 22, 0.85);
+  border: 1px dashed rgba(16, 185, 129, 0.4);
+  border-radius: 8px;
+  padding: 0.7rem;
+  margin: 0.5rem 0;
+  text-align: center;
+}
+
+
+/* Grid de 4 Aplicaciones para Diapositiva 15 */
+.telecom-apps-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1.15rem;
+  flex: 1;
+  align-items: stretch;
+  min-height: 0;
+}
+
+.app-card-detailed {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid var(--border-slate);
+  border-left: 4px solid var(--emerald-400);
+  border-radius: 12px;
+  padding: 1.1rem 1.3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.5rem;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.app-card-detailed:hover {
+  border-color: var(--mint-neon);
+  background: rgba(17, 24, 39, 0.95);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -4px var(--emerald-glow);
+}
+
+.app-card-header-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.2rem;
+}
+
+.app-tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--mint-neon);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.app-card-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.app-card-body-text {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  flex: 1;
+}
+
+.app-card-formula-highlight {
+  margin-top: 0.4rem;
+  padding: 0.5rem 0.8rem;
+  background: rgba(8, 12, 22, 0.75);
+  border-radius: 8px;
+  border: 1px dashed rgba(52, 211, 153, 0.35);
+  font-size: 0.9rem;
+  text-align: center;
+  color: var(--emerald-300);
+}
+
+/* --------------------------------------------------------------------------
+   ESTRUCTURA DE DIAPOSITIVAS DE EXPERIMENTOS
+   -------------------------------------------------------------------------- */
+.exp-intro-banner {
+  background: rgba(17, 24, 39, 0.75);
+  border: 1px solid var(--border-slate);
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.exp-intro-banner .exp-badge {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: var(--mint-neon);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.code-snippet-box {
+  background: #040711;
+  border: 1px solid var(--border-slate);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  max-height: 210px;
+}
+
+.code-snippet-header {
+  background: rgba(17, 24, 39, 0.9);
+  padding: 0.35rem 0.7rem;
+  border-bottom: 1px solid var(--border-slate);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--emerald-300);
+}
+
+.code-snippet-body {
+  padding: 0.6rem 0.8rem;
+  overflow: auto;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: #e2e8f0;
+}
+
+/* Sección Inferior de Análisis y Aplicación */
+.exp-bottom-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 0.9rem;
+  margin-top: 0.2rem;
+}
+
+.analysis-card {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid var(--border-slate);
+  border-left: 3.5px solid var(--mint-neon);
+  border-radius: 8px;
+  padding: 0.75rem 0.95rem;
+  font-size: 0.79rem;
+  line-height: 1.5;
+  color: var(--text-main);
+}
+
+.analysis-card h5 {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--mint-neon);
+  margin-bottom: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* --------------------------------------------------------------------------
+   VISOR DE GRAFICOS INTERACTIVOS (CHART.JS / PLOTLY / MATLAB)
+   -------------------------------------------------------------------------- */
+.chart-viewer-box {
+  background: rgba(8, 12, 22, 0.95);
+  border: 1px solid var(--border-slate);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.chart-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.45rem 0.8rem;
+  background: rgba(17, 24, 39, 0.9);
+  border-bottom: 1px solid var(--border-slate);
+  gap: 0.5rem;
+}
+
+.chart-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.chart-tab-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.22rem 0.58rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chart-tab-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.chart-tab-btn.active {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: var(--mint-neon);
+}
+
+.btn-demo-run {
+  background: linear-gradient(135deg, #059669, #10b981);
+  border: none;
+  color: #030712;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.28rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  box-shadow: 0 0 15px -3px var(--emerald-glow);
+  transition: all 0.2s ease;
+}
+
+.btn-demo-run:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+.chart-canvas-area {
+  flex: 1;
+  min-height: 275px;
+  max-height: 310px;
+  padding: 0.6rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-canvas-area canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.matlab-img-view {
+  display: none;
+  max-width: 100%;
+  max-height: 285px;
+  object-fit: contain;
+  border-radius: 6px;
+  margin: 0 auto;
+}
+
+.chart-viewer-box.show-matlab .chart-canvas-area canvas,
+.chart-viewer-box.show-matlab .chart-canvas-area .plotly-container {
+  display: none !important;
+}
+
+.chart-viewer-box.show-matlab .matlab-img-view {
+  display: block !important;
+}
+
+/* --------------------------------------------------------------------------
+   PORTADA DE ALTO IMPACTO CON LOGOS UNSA Y EPIT
+   -------------------------------------------------------------------------- */
+.cover-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  text-align: center;
+  padding: 0.4rem 0;
+}
+
+.cover-header-logos {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.cover-logo-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.cover-logo-img {
+  height: 82px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 14px rgba(16, 185, 129, 0.45));
+  transition: transform 0.3s ease;
+}
+
+.cover-logo-img:hover {
+  transform: scale(1.05);
+}
+
+.cover-logo-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--mint-neon);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.cover-institutional-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cover-pill-academic {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.95rem;
+  border-radius: 9999px;
+  background: rgba(17, 24, 39, 0.85);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: var(--mint-neon);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  box-shadow: 0 0 20px -3px var(--emerald-glow);
+  margin-bottom: 0.5rem;
+}
+
+.cover-h1 {
+  font-size: 2.05rem;
+  font-weight: 900;
+  line-height: 1.22;
+  color: #fff;
+  letter-spacing: -0.025em;
+  margin-bottom: 0.45rem;
+}
+
+.cover-h1 .gradient-text {
+  background: linear-gradient(135deg, #00f5a0 0%, #34d399 45%, #6ee7b7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.cover-desc {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.45;
+}
+
+.authors-team-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.65rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.author-card-modern {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(30, 41, 59, 0.8);
+  border-radius: 12px;
+  padding: 0.75rem 0.55rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.35rem;
+  transition: all 0.3s ease;
+}
+
+.author-card-modern:hover {
+  background: rgba(17, 24, 39, 0.95);
+  border-color: var(--emerald-400);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px -5px var(--emerald-glow);
+}
+
+.author-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1.5px solid rgba(16, 185, 129, 0.4);
+  color: var(--mint-neon);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.25);
+}
+
+.author-name-text {
+  font-size: 0.77rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.25;
+}
+
+.author-role-text {
+  font-family: var(--font-mono);
+  font-size: 0.67rem;
+  color: var(--text-dim);
+  line-height: 1.2;
+}
+
+.cover-cta-row {
+  margin-top: 0.8rem;
+}
+
+.btn-start-presentation {
+  background: linear-gradient(135deg, #059669 0%, #10b981 50%, #00f5a0 100%);
+  border: none;
+  color: #030712;
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.65rem 2.1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 0 25px var(--emerald-glow);
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.btn-start-presentation:hover {
+  filter: brightness(1.15);
+  transform: scale(1.03);
+  box-shadow: 0 0 35px rgba(0, 245, 160, 0.6);
+}
+
+/* --------------------------------------------------------------------------
+   FOOTER DE NAVEGACION
+   -------------------------------------------------------------------------- */
+.footer-deck {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 54px;
+  background: rgba(11, 15, 25, 0.88);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--border-slate);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  z-index: 50;
+}
+
+.slide-counter-badge {
+  display: none !important;
+}
+
+.deck-nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-deck-nav {
+  background: rgba(17, 24, 39, 0.9);
+  border: 1px solid var(--border-slate);
+  color: #fff;
+  padding: 0.45rem 1.1rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: all 0.2s ease;
+}
+
+.btn-deck-nav:hover:not(:disabled) {
+  background: var(--emerald-500);
+  color: #030712;
+  border-color: var(--emerald-500);
+  box-shadow: 0 0 18px var(--emerald-glow);
+}
+
+.btn-deck-nav:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* --------------------------------------------------------------------------
+   MODAL DE INDICE DE DIAPOSITIVAS
+   -------------------------------------------------------------------------- */
+.sidebar-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.93);
+  backdrop-filter: blur(16px);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sidebar-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-slate);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.sidebar-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.sidebar-card-item {
+  background: rgba(17, 24, 39, 0.75);
+  border: 1px solid var(--border-slate);
+  border-radius: 10px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.sidebar-card-item:hover {
+  border-color: var(--emerald-400);
+  background: rgba(17, 24, 39, 0.95);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -4px var(--emerald-glow);
+}
+
+.sidebar-card-item.active {
+  border-color: var(--mint-neon);
+  background: rgba(16, 185, 129, 0.15);
+}
+
+/* --------------------------------------------------------------------------
+   MODO IMPRESION A PDF (@media print)
+   -------------------------------------------------------------------------- */
+@media print {
+  @page {
+    size: landscape;
+    margin: 0;
+  }
+  body {
+    background: #030712 !important;
+    color: #fff !important;
+    overflow: visible !important;
+  }
+  .header-progress, .footer-deck, .progress-line-track, .sidebar-modal, #bg-canvas, .ambient-glow-1, .ambient-glow-2 {
+    display: none !important;
+  }
+  .presentation-container {
+    position: static !important;
+    padding: 0 !important;
+  }
+  .deck-stage {
+    max-width: 100% !important;
+    max-height: none !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .slide-pane {
+    position: relative !important;
+    display: flex !important;
+    opacity: 1 !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    transform: none !important;
+    padding: 2.2rem !important;
+    box-sizing: border-box !important;
+  }
+}

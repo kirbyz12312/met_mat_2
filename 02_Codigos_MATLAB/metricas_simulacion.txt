@@ -1,0 +1,35 @@
+METRICAS NUMERICAS DE SIMULACION - TEMA 08 (GRUPO 02)
+====================================================
+
+PARAMETROS NOMINALES:
+  Amplitud A: 2.0000 V
+  Frecuencia f0: 1000.0000 Hz
+  Frecuencia muestreo fs: 20000.0000 Hz
+  Ventana ensamble T_obs: 0.005000 s
+  Potencia teorica P_X = A^2/2: 2.000000 W
+
+ESTADISTICAS DE CONJUNTO SEGUN TAMAÑO DE ENSAMBLE:
+  M = 100:
+    MAE media mu_X(t): 0.071433 V
+    RMSE autocorrelacion R_X(tau): 0.073234 W
+    Potencia media estimada R(0): 2.017319 W
+  M = 1000:
+    MAE media mu_X(t): 0.068961 V
+    RMSE autocorrelacion R_X(tau): 0.003416 W
+    Potencia media estimada R(0): 1.995917 W
+  M = 10000:
+    MAE media mu_X(t): 0.011112 V
+    RMSE autocorrelacion R_X(tau): 0.006227 W
+    Potencia media estimada R(0): 1.999760 W
+    Error relativo porcentual de potencia: 0.0120 %
+
+ESTADISTICAS TEMPORALES (1 REALIZACION LARGA, T = 1.0 s):
+  Media temporal <x(t)>: -0.000016 V
+  Potencia temporal <x^2(t)>: 1.999905 W
+  RMSE autocorrelacion temporal vs teoria: 0.000217 W
+
+CONTRAEJEMPLO NO ESTACIONARIO (Y(t) = A(1+alpha*t)cos(2*pi*f0*t + Theta)):
+  Pendiente alpha: 600.0000 s^-1
+  RMSE varianza sim vs teorica: 0.087941 W
+  Varianza inicial (t=0): 1.996111 W
+  Varianza final (t=5ms): 31.937769 W

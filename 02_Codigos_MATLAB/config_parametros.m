@@ -36,7 +36,16 @@ function cfg = config_parametros()
     cfg.alpha_ramp = 600.0;    % Pendiente de modulacion temporal [s^-1]
     
     % Directorios de salida para figuras y tablas
-    cfg.dir_figuras_informe = fullfile('..', '01_Informe_IEEE', 'figures');
-    cfg.dir_figuras_presentacion = fullfile('..', '02_Presentacion', 'figures');
-    cfg.dir_datos = fullfile('.');
+    % Rutas robustas compatibles tanto si se ejecuta desde 02_Codigos_MATLAB o desde la raiz
+    dir_este_script = fileparts(mfilename('fullpath'));
+    dir_raiz_proyecto = fileparts(dir_este_script);
+    if exist(fullfile(dir_raiz_proyecto, '01_Informe_IEEE'), 'dir')
+        base_dir = dir_raiz_proyecto;
+    else
+        base_dir = '..';
+    end
+    
+    cfg.dir_figuras_informe = fullfile(base_dir, '01_Informe_IEEE', 'figures');
+    cfg.dir_figuras_presentacion = fullfile(base_dir, '03_Presentacion_Web', 'figures');
+    cfg.dir_datos = dir_este_script;
 end

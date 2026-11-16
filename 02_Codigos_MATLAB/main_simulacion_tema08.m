@@ -356,5 +356,5 @@ fclose(fid);
 save('workspace_simulacion_tema08.mat');
 
 fprintf('\n>>> Simulacion completada exitosamente.\n');
-fprintf('>>> Figuras exportadas a 300 DPI en:\n    - 01_Informe_IEEE/figures/\n    - 02_Presentacion/figures/\n');
+fprintf('>>> Figuras exportadas a 300 DPI en:\n    - 01_Informe_IEEE/figures/\n    - 03_Presentacion_Web/figures/\n');
 fprintf('>>> Metricas guardadas en metricas_simulacion.txt\n');

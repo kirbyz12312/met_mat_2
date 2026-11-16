@@ -218,18 +218,20 @@ const StochasticSim = (() => {
     },
 
     /**
-     * Experimento 5: Contraejemplo No Estacionario (Varianza cuadrática y Random Walk)
+     * Experimento 5: Contraejemplo No Estacionario (4 Subplots completos)
      */
     getCounterexampleData(A = 2.0, f0 = 1000, alpha = 600, T_obs = 0.005) {
       const dt = 0.00005;
       const numPts = 101;
       const t_ms = [];
+      const t_raw = [];
       const var_theory = [];
       const var_sim = [];
       const rng = createRng(777777);
 
       for (let i = 0; i < numPts; i++) {
         const t = i * dt;
+        t_raw.push(t);
         t_ms.push((t * 1000).toFixed(2));
         const env = 1 + alpha * t;
         const vTeo = (A * A / 2) * env * env;
@@ -239,13 +241,54 @@ const StochasticSim = (() => {
         var_sim.push(Number((vTeo + noise).toFixed(4)));
       }
 
-      // Caminata aleatoria (Random walk) 4 trazas
+      // Subplot 1: Realizaciones de Y(t) con amplitud creciente (3 trazas)
+      const thetas_Y = [0.15 * Math.PI, 0.72 * Math.PI, 1.45 * Math.PI];
+      const traces_Y = [];
+      for (let m = 0; m < 3; m++) {
+        const yData = [];
+        const th = thetas_Y[m];
+        for (let i = 0; i < numPts; i++) {
+          const t = t_raw[i];
+          const env = 1 + alpha * t;
+          const yVal = A * env * Math.cos(2 * Math.PI * f0 * t + th);
+          yData.push(Number(yVal.toFixed(4)));
+        }
+        traces_Y.push({
+          label: `Realización Y_${m+1}(t) [θ=${(th/Math.PI).toFixed(2)}π]`,
+          data: yData
+        });
+      }
+
+      // Subplot 3: Matriz 2D RY(t1, t2) No Estacionaria (submuestreada a 51x51 para suavidad en Plotly)
+      const stepSub = 2;
+      const tSub = [];
+      for (let tVal = 0; tVal <= T_obs; tVal += dt * stepSub) {
+        tSub.push(tVal);
+      }
+      const Nsub = tSub.length;
+      const matrix_RY = [];
+      const t_sub_ms = tSub.map(v => (v * 1000).toFixed(2));
+
+      for (let i = 0; i < Nsub; i++) {
+        const row = [];
+        const t1 = tSub[i];
+        const env1 = 1 + alpha * t1;
+        for (let j = 0; j < Nsub; j++) {
+          const t2 = tSub[j];
+          const env2 = 1 + alpha * t2;
+          const rVal = (A * A / 2) * env1 * env2 * Math.cos(2 * Math.PI * f0 * (t2 - t1));
+          row.push(Number(rVal.toFixed(3)));
+        }
+        matrix_RY.push(row);
+      }
+
+      // Subplot 4: Caminata aleatoria (Random walk) 4 trazas
       const rwTraces = [];
       for (let m = 0; m < 4; m++) {
         const rwData = [];
         let acc = 0;
         for (let i = 0; i < numPts; i++) {
-          const step = (rng() - 0.5) * 0.2;
+          const step = (rng() - 0.5) * 0.22;
           acc += step;
           rwData.push(Number(acc.toFixed(4)));
         }
@@ -259,7 +302,7 @@ const StochasticSim = (() => {
       const sigmaBoundPos = [];
       const sigmaBoundNeg = [];
       for (let i = 0; i < numPts; i++) {
-        const s = 0.08 * Math.sqrt(i);
+        const s = 0.09 * Math.sqrt(i);
         sigmaBoundPos.push(Number(s.toFixed(4)));
         sigmaBoundNeg.push(Number((-s).toFixed(4)));
       }
@@ -268,6 +311,9 @@ const StochasticSim = (() => {
         t_ms,
         var_theory,
         var_sim,
+        traces_Y,
+        t_sub_ms,
+        matrix_RY,
         rwTraces,
         sigmaBoundPos,
         sigmaBoundNeg

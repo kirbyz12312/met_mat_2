@@ -28,7 +28,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Modal Sidebar / Índice
     sidebarModal: document.getElementById('sidebar-modal'),
     btnCloseSidebar: document.getElementById('btn-close-sidebar'),
-    sidebarGrid: document.getElementById('sidebar-grid')
+    sidebarGrid: document.getElementById('sidebar-grid'),
+
+    // Modal Lightbox para figuras MATLAB 300 DPI
+    lightboxModal: document.getElementById('image-lightbox-modal'),
+    lightboxImg: document.getElementById('lightbox-image'),
+    lightboxTitle: document.getElementById('lightbox-title'),
+    lightboxClose: document.getElementById('lightbox-close'),
+    lightboxDownload: document.getElementById('lightbox-download-link')
   };
 
   // =========================================================================
@@ -398,12 +405,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function initChartExp5() {
-    const ctx = document.getElementById('chart-exp5');
-    if (!ctx || state.charts['exp5']) return;
+  // -------------------------------------------------------------------------
+  // EXPERIMENTO 5: CONTRAEJEMPLO NO ESTACIONARIO (4 SUBPLOTS INTERACTIVOS)
+  // -------------------------------------------------------------------------
+  function initChartExp5Var() {
+    const ctx = document.getElementById('chart-exp5-var');
+    if (!ctx || state.charts['exp5_var']) return;
 
     const data = StochasticSim.getCounterexampleData();
-    state.charts['exp5'] = new Chart(ctx, {
+    state.charts['exp5_var'] = new Chart(ctx, {
       type: 'line',
       data: {
         labels: data.t_ms,
@@ -426,11 +436,133 @@ document.addEventListener('DOMContentLoaded', () => {
         ]
       },
       options: getDarkChartOptions(
-        'Ruptura de WSS: Crecimiento Cuadrático de la Varianza (α = 600 s⁻¹)',
+        'Subplot 2: Crecimiento Temporal Cuadrático de la Varianza (Falla WSS)',
         'Tiempo t [ms]',
         'Varianza σ_Y²(t) [W]'
       )
     });
+  }
+
+  function initChartExp5Traces() {
+    const ctx = document.getElementById('chart-exp5-traces');
+    if (!ctx || state.charts['exp5_traces']) return;
+
+    const data = StochasticSim.getCounterexampleData();
+    const colors = ['#38bdf8', '#fb923c', '#4ade80'];
+    const datasets = data.traces_Y.map((tr, idx) => ({
+      label: tr.label,
+      data: tr.data,
+      borderColor: colors[idx % colors.length],
+      borderWidth: 1.4,
+      pointRadius: 0
+    }));
+
+    state.charts['exp5_traces'] = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: data.t_ms,
+        datasets: datasets
+      },
+      options: getDarkChartOptions(
+        'Subplot 1: Realizaciones de Y(t) = A(1+αt) cos(2π f₀ t + Θ) con Envolvente Creciente',
+        'Tiempo t [ms]',
+        'Amplitud Y(t) [V]'
+      )
+    });
+  }
+
+  function initChartExp5Matrix() {
+    const container = document.getElementById('plotly-exp5-matrix');
+    if (!container || typeof Plotly === 'undefined' || state.plotlyRendered['exp5_matrix']) return;
+
+    const data = StochasticSim.getCounterexampleData();
+    const plotData = [{
+      z: data.matrix_RY,
+      x: data.t_sub_ms,
+      y: data.t_sub_ms,
+      type: 'heatmap',
+      colorscale: 'Jet',
+      colorbar: {
+        title: 'RY(t1, t2)',
+        titleside: 'right',
+        tickfont: { color: '#94a3b8', size: 8 },
+        titlefont: { color: '#00f5a0', size: 9 }
+      }
+    }];
+
+    const layout = {
+      title: {
+        text: 'Subplot 3: Matriz Bidimensional RY(t₁, t₂) No Estacionaria (Falla Toeplitz)',
+        font: { color: '#f8fafc', size: 11 }
+      },
+      paper_bgcolor: 'transparent',
+      plot_bgcolor: 'transparent',
+      margin: { t: 30, r: 8, b: 30, l: 30 },
+      xaxis: {
+        title: 'Instante t₁ [ms]',
+        color: '#94a3b8',
+        tickfont: { color: '#64748b', size: 8.5 },
+        gridcolor: 'rgba(148, 163, 184, 0.08)'
+      },
+      yaxis: {
+        title: 'Instante t₂ [ms]',
+        color: '#94a3b8',
+        tickfont: { color: '#64748b', size: 8.5 },
+        gridcolor: 'rgba(148, 163, 184, 0.08)'
+      }
+    };
+
+    Plotly.newPlot(container, plotData, layout, { responsive: true, displayModeBar: false });
+    state.plotlyRendered['exp5_matrix'] = true;
+  }
+
+  function initChartExp5RW() {
+    const ctx = document.getElementById('chart-exp5-rw');
+    if (!ctx || state.charts['exp5_rw']) return;
+
+    const data = StochasticSim.getCounterexampleData();
+    const colors = ['#38bdf8', '#fb923c', '#eab308', '#a855f7'];
+    const datasets = data.rwTraces.map((tr, idx) => ({
+      label: tr.label,
+      data: tr.data,
+      borderColor: colors[idx % colors.length],
+      borderWidth: 1.2,
+      pointRadius: 0
+    }));
+
+    datasets.push({
+      label: '+σ_W(n) ∝ √n (Cota Superior)',
+      data: data.sigmaBoundPos,
+      borderColor: '#ffffff',
+      borderWidth: 1.8,
+      borderDash: [4, 4],
+      pointRadius: 0
+    });
+    datasets.push({
+      label: '-σ_W(n) ∝ √n (Cota Inferior)',
+      data: data.sigmaBoundNeg,
+      borderColor: '#ffffff',
+      borderWidth: 1.8,
+      borderDash: [4, 4],
+      pointRadius: 0
+    });
+
+    state.charts['exp5_rw'] = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: data.t_ms,
+        datasets: datasets
+      },
+      options: getDarkChartOptions(
+        'Subplot 4: Caminata Aleatoria W[n] con Dispersión Temporal Creciente ∝ √n',
+        'Tiempo t [ms]',
+        'Amplitud Paseo W[n]'
+      )
+    });
+  }
+
+  function initChartExp5() {
+    initChartExp5Var();
   }
 
   function initChartExp6() {
@@ -607,12 +739,16 @@ document.addEventListener('DOMContentLoaded', () => {
   function setupChartTabSwitchers() {
     const boxes = document.querySelectorAll('.chart-viewer-box');
     boxes.forEach(box => {
+      // Ignorar caja de exp5 para manejo especializado con 4 subplots
+      if (box.querySelector('#tabs-exp5')) return;
+
       const tabInteractive = box.querySelector('.chart-tab-interactive');
       const tabHeatmap = box.querySelector('.chart-tab-heatmap');
       const tabMatlab = box.querySelector('.chart-tab-matlab');
       const canvasEl = box.querySelector('canvas');
       const plotlyEl = box.querySelector('.plotly-container');
       const matlabImg = box.querySelector('.matlab-img-view');
+      const zoomHint = box.querySelector('.matlab-zoom-hint');
       const btnRun = box.querySelector('.btn-demo-run');
 
       if (tabInteractive) {
@@ -620,6 +756,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (canvasEl) canvasEl.style.display = 'block';
           if (plotlyEl) plotlyEl.style.display = 'none';
           if (matlabImg) matlabImg.style.display = 'none';
+          if (zoomHint) zoomHint.style.display = 'none';
           tabInteractive.classList.add('active');
           if (tabHeatmap) tabHeatmap.classList.remove('active');
           if (tabMatlab) tabMatlab.classList.remove('active');
@@ -634,6 +771,7 @@ document.addEventListener('DOMContentLoaded', () => {
             initChartExp3();
           }
           if (matlabImg) matlabImg.style.display = 'none';
+          if (zoomHint) zoomHint.style.display = 'none';
           tabHeatmap.classList.add('active');
           if (tabInteractive) tabInteractive.classList.remove('active');
           if (tabMatlab) tabMatlab.classList.remove('active');
@@ -645,6 +783,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (canvasEl) canvasEl.style.display = 'none';
           if (plotlyEl) plotlyEl.style.display = 'none';
           if (matlabImg) matlabImg.style.display = 'block';
+          if (zoomHint) zoomHint.style.display = 'block';
           tabMatlab.classList.add('active');
           if (tabInteractive) tabInteractive.classList.remove('active');
           if (tabHeatmap) tabHeatmap.classList.remove('active');
@@ -669,10 +808,113 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       }
     });
+
+    // Manejo especializado para Experimento 5 (4 subplots interactivos + MATLAB 300 DPI)
+    const tabsExp5 = document.getElementById('tabs-exp5');
+    if (tabsExp5) {
+      const exp5Buttons = tabsExp5.querySelectorAll('button[data-exp5-tab]');
+      const canvasVar = document.getElementById('chart-exp5-var');
+      const canvasTraces = document.getElementById('chart-exp5-traces');
+      const plotlyMatrix = document.getElementById('plotly-exp5-matrix');
+      const canvasRW = document.getElementById('chart-exp5-rw');
+      const viewerBox = tabsExp5.closest('.chart-viewer-box');
+      const imgMatlab = viewerBox ? viewerBox.querySelector('.matlab-img-view') : null;
+      const zoomHint = viewerBox ? viewerBox.querySelector('.matlab-zoom-hint') : null;
+
+      exp5Buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          exp5Buttons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          const tabType = btn.getAttribute('data-exp5-tab');
+          if (canvasVar) canvasVar.style.display = (tabType === 'var') ? 'block' : 'none';
+          if (canvasTraces) canvasTraces.style.display = (tabType === 'traces') ? 'block' : 'none';
+          if (plotlyMatrix) plotlyMatrix.style.display = (tabType === 'matrix') ? 'block' : 'none';
+          if (canvasRW) canvasRW.style.display = (tabType === 'rw') ? 'block' : 'none';
+          if (imgMatlab) imgMatlab.style.display = (tabType === 'matlab') ? 'block' : 'none';
+          if (zoomHint) zoomHint.style.display = (tabType === 'matlab') ? 'block' : 'none';
+
+          if (tabType === 'var') initChartExp5Var();
+          if (tabType === 'traces') initChartExp5Traces();
+          if (tabType === 'matrix') {
+            initChartExp5Matrix();
+            if (typeof Plotly !== 'undefined' && plotlyMatrix) {
+              Plotly.Plots.resize(plotlyMatrix);
+            }
+          }
+          if (tabType === 'rw') initChartExp5RW();
+        });
+      });
+
+      const btnRunExp5 = document.getElementById('btn-run-exp5');
+      if (btnRunExp5) {
+        btnRunExp5.addEventListener('click', () => {
+          btnRunExp5.innerHTML = '⏳ Calculando...';
+          btnRunExp5.style.opacity = '0.7';
+          setTimeout(() => {
+            btnRunExp5.innerHTML = '▶ Ejecutar Simulación';
+            btnRunExp5.style.opacity = '1';
+            if (state.charts['exp5_var']) state.charts['exp5_var'].update();
+            if (state.charts['exp5_traces']) state.charts['exp5_traces'].update();
+            if (state.charts['exp5_rw']) state.charts['exp5_rw'].update();
+          }, 350);
+        });
+      }
+    }
   }
 
   // =========================================================================
-  // 9. ATAJOS DE TECLADO Y EVENTOS GLOBALES
+  // 9. LIGHTBOX MODAL PARA IMAGENES MATLAB 300 DPI (ALTA RESOLUCION)
+  // =========================================================================
+  function openLightbox(src, title) {
+    if (!dom.lightboxModal || !dom.lightboxImg) return;
+    dom.lightboxImg.src = src;
+    if (dom.lightboxTitle) {
+      dom.lightboxTitle.textContent = title || 'Visualización de Figura MATLAB (300 DPI)';
+    }
+    if (dom.lightboxDownload) {
+      dom.lightboxDownload.href = src;
+    }
+    dom.lightboxModal.classList.add('open');
+  }
+
+  function closeLightbox() {
+    if (dom.lightboxModal) dom.lightboxModal.classList.remove('open');
+  }
+
+  function setupLightboxEvents() {
+    // Abrir modal al hacer clic en cualquier imagen MATLAB o su hint flotante
+    document.querySelectorAll('.chart-canvas-area').forEach(area => {
+      const img = area.querySelector('.matlab-img-view');
+      const hint = area.querySelector('.matlab-zoom-hint');
+      if (img) {
+        img.addEventListener('click', () => {
+          openLightbox(img.src, img.alt);
+        });
+      }
+      if (hint && img) {
+        hint.addEventListener('click', () => {
+          openLightbox(img.src, img.alt);
+        });
+      }
+    });
+
+    // Cerrar modal
+    if (dom.lightboxClose) {
+      dom.lightboxClose.addEventListener('click', closeLightbox);
+    }
+    if (dom.lightboxModal) {
+      dom.lightboxModal.addEventListener('click', (e) => {
+        // Cerrar si hace clic en el fondo oscuro fuera del cuadro blanco/oscuro
+        if (e.target === dom.lightboxModal) {
+          closeLightbox();
+        }
+      });
+    }
+  }
+
+  // =========================================================================
+  // 10. ATAJOS DE TECLADO Y EVENTOS GLOBALES
   // =========================================================================
   function setupEventListeners() {
     if (dom.btnPrev) dom.btnPrev.addEventListener('click', prevSlide);
@@ -700,6 +942,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Teclas de navegación
     document.addEventListener('keydown', (e) => {
+      if (dom.lightboxModal && dom.lightboxModal.classList.contains('open')) {
+        if (e.key === 'Escape') closeLightbox();
+        return;
+      }
+
       if (dom.sidebarModal && dom.sidebarModal.classList.contains('open')) {
         if (e.key === 'Escape') closeSidebar();
         return;
@@ -753,6 +1000,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initBackgroundCanvas();
     setupEventListeners();
+    setupLightboxEvents();
     setupChartTabSwitchers();
     buildSidebarGrid();
     renderSlide(1);

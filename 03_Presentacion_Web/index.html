@@ -723,16 +723,24 @@
               <!-- Código MATLAB que ejecuta la gráfica -->
               <div class="code-snippet-box">
                 <div class="code-snippet-header">
-                  <span>MATLAB: generar_proceso_sinusoidal.m</span>
-                  <span>Vectorizado [M x N]</span>
+                  <span>MATLAB: FIGURA 1 (main_simulacion_tema08.m)</span>
+                  <span>Ensamble y Corte t₀</span>
                 </div>
                 <div class="code-snippet-body">
-                  <pre><code>function [X, Theta] = generar_proceso_sinusoidal(M, t, A, f0, seed)
-    rng(seed);
-    Theta = 2 * pi * rand(M, 1); % Fase aleatoria U(0, 2pi)
-    fase_total = 2 * pi * f0 * t + Theta; % Matriz M x N
-    X = A * cos(fase_total); % Realizaciones
-end</code></pre>
+                  <pre><code><span class="m-comment">% FIGURA 1: Muestras del Ensamble del Proceso Sinusoidal</span>
+<span class="m-var">f1</span> = <span class="m-func">figure</span>(<span class="m-str">'Name'</span>, <span class="m-str">'Fig1_Realizaciones_Ensamble'</span>, <span class="m-str">'Color'</span>, <span class="m-str">'w'</span>);
+<span class="m-func">hold</span> <span class="m-keyword">on</span>; <span class="m-func">grid</span> <span class="m-keyword">on</span>; <span class="m-func">box</span> <span class="m-keyword">on</span>;
+<span class="m-var">t_ms</span> = <span class="m-var">cfg</span>.<span class="m-var">t</span> * <span class="m-num">1e3</span>; <span class="m-var">num_trazas</span> = <span class="m-num">5</span>;
+<span class="m-keyword">for</span> <span class="m-var">m</span> = <span class="m-num">1</span>:<span class="m-var">num_trazas</span>
+    <span class="m-func">plot</span>(<span class="m-var">t_ms</span>, <span class="m-var">X_10000</span>(<span class="m-var">m</span>, :), <span class="m-str">'LineWidth'</span>, <span class="m-num">1.4</span>, ...
+        <span class="m-str">'DisplayName'</span>, <span class="m-func">sprintf</span>(<span class="m-str">'x_{%d}(t), \\Theta_{%d} = %.2f\\pi'</span>, <span class="m-var">m</span>, <span class="m-var">m</span>, <span class="m-var">theta_10000</span>(<span class="m-var">m</span>)/<span class="m-func">pi</span>));
+<span class="m-keyword">end</span>
+<span class="m-comment">% Indicador del corte transversal (instante t_0 fijo)</span>
+<span class="m-var">t_corte_ms</span> = <span class="m-num">1.25</span>; <span class="m-var">idx_corte</span> = <span class="m-func">round</span>(<span class="m-var">t_corte_ms</span>*<span class="m-num">1e-3</span>/<span class="m-var">cfg</span>.<span class="m-var">dt</span>) + <span class="m-num">1</span>;
+<span class="m-func">xline</span>(<span class="m-var">t_corte_ms</span>, <span class="m-str">'--k'</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">1.5</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'Corte t = 1.25 ms'</span>);
+<span class="m-func">scatter</span>(<span class="m-func">repmat</span>(<span class="m-var">t_corte_ms</span>, <span class="m-var">num_trazas</span>, <span class="m-num">1</span>), <span class="m-var">X_10000</span>(<span class="m-num">1</span>:<span class="m-var">num_trazas</span>, <span class="m-var">idx_corte</span>), <span class="m-num">45</span>, <span class="m-str">'ko'</span>, <span class="m-str">'filled'</span>);
+<span class="m-func">xlabel</span>(<span class="m-str">'Tiempo t [ms]'</span>); <span class="m-func">ylabel</span>(<span class="m-str">'Amplitud [V]'</span>);
+<span class="m-func">title</span>(<span class="m-func">sprintf</span>(<span class="m-str">'Ensamble X(t) = A cos(2\\pi f_0 t + \\Theta)'</span>));</code></pre>
                 </div>
               </div>
             </div>
@@ -748,7 +756,8 @@ end</code></pre>
               </div>
               <div class="chart-canvas-area">
                 <canvas id="chart-exp1"></canvas>
-                <img src="figures/fig1_realizaciones_ensamble.png" class="matlab-img-view" alt="Figura 1 MATLAB">
+                <img src="figures/fig1_realizaciones_ensamble.png" class="matlab-img-view" alt="Figura 1: Muestras del Ensamble del Proceso Estocástico Sinusoidal">
+                <span class="matlab-zoom-hint">🔍 Clic para ampliar a 300 DPI</span>
               </div>
             </div>
           </div>
@@ -813,15 +822,25 @@ end</code></pre>
 
               <div class="code-snippet-box">
                 <div class="code-snippet-header">
-                  <span>MATLAB: estimar_estadisticas_conjunto.m</span>
-                  <span>Cálculo Vectorizado</span>
+                  <span>MATLAB: FIGURA 2 (main_simulacion_tema08.m)</span>
+                  <span>Media y Varianza vs Tiempo</span>
                 </div>
                 <div class="code-snippet-body">
-                  <pre><code>function [mu_hat, var_hat] = estimar_estadisticas_conjunto(X, t)
-    % Media y varianza insesgada sobre la dimension de realizaciones (1)
-    mu_hat = mean(X, 1);
-    var_hat = var(X, 0, 1);
-end</code></pre>
+                  <pre><code><span class="m-comment">% FIGURA 2: Media y Varianza de Conjunto vs Tiempo</span>
+<span class="m-var">f2</span> = <span class="m-func">figure</span>(<span class="m-str">'Name'</span>, <span class="m-str">'Fig2_Media_Varianza_Conjunto'</span>, <span class="m-str">'Color'</span>, <span class="m-str">'w'</span>);
+<span class="m-func">subplot</span>(<span class="m-num">2</span>, <span class="m-num">1</span>, <span class="m-num">1</span>); <span class="m-func">hold</span> <span class="m-keyword">on</span>; <span class="m-func">grid</span> <span class="m-keyword">on</span>;
+<span class="m-func">plot</span>(<span class="m-var">t_ms</span>, <span class="m-var">mu_100</span>,   <span class="m-str">'LineWidth'</span>, <span class="m-num">1.0</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'M = 100'</span>);
+<span class="m-func">plot</span>(<span class="m-var">t_ms</span>, <span class="m-var">mu_1000</span>,  <span class="m-str">'LineWidth'</span>, <span class="m-num">1.1</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'M = 1,000'</span>);
+<span class="m-func">plot</span>(<span class="m-var">t_ms</span>, <span class="m-var">mu_10000</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">1.5</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'M = 10,000'</span>);
+<span class="m-func">yline</span>(<span class="m-num">0</span>, <span class="m-str">'k--'</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">1.5</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'Teórico \mu_X = 0 V'</span>);
+<span class="m-func">ylabel</span>(<span class="m-str">'Media \mu_X(t) [V]'</span>);
+
+<span class="m-func">subplot</span>(<span class="m-num">2</span>, <span class="m-num">1</span>, <span class="m-num">2</span>); <span class="m-func">hold</span> <span class="m-keyword">on</span>; <span class="m-func">grid</span> <span class="m-keyword">on</span>;
+<span class="m-func">plot</span>(<span class="m-var">t_ms</span>, <span class="m-var">var_100</span>,   <span class="m-str">'LineWidth'</span>, <span class="m-num">1.0</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'M = 100'</span>);
+<span class="m-func">plot</span>(<span class="m-var">t_ms</span>, <span class="m-var">var_1000</span>,  <span class="m-str">'LineWidth'</span>, <span class="m-num">1.1</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'M = 1,000'</span>);
+<span class="m-func">plot</span>(<span class="m-var">t_ms</span>, <span class="m-var">var_10000</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">1.5</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'M = 10,000'</span>);
+<span class="m-func">yline</span>(<span class="m-var">cfg</span>.<span class="m-var">A</span>^<span class="m-num">2</span> / <span class="m-num">2</span>, <span class="m-str">'k--'</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">1.5</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'Teórico A^2/2 = 2.0 W'</span>);
+<span class="m-func">ylabel</span>(<span class="m-str">'Varianza \sigma_X^2(t) [V^2]'</span>);</code></pre>
                 </div>
               </div>
             </div>
@@ -837,7 +856,8 @@ end</code></pre>
               </div>
               <div class="chart-canvas-area">
                 <canvas id="chart-exp2"></canvas>
-                <img src="figures/fig2_media_y_varianza_conjunto.png" class="matlab-img-view" alt="Figura 2 MATLAB">
+                <img src="figures/fig2_media_y_varianza_conjunto.png" class="matlab-img-view" alt="Figura 2: Media y Varianza de Conjunto vs Tiempo">
+                <span class="matlab-zoom-hint">🔍 Clic para ampliar a 300 DPI</span>
               </div>
             </div>
           </div>
@@ -901,16 +921,24 @@ end</code></pre>
 
               <div class="code-snippet-box">
                 <div class="code-snippet-header">
-                  <span>MATLAB: Diagonales de Toeplitz</span>
-                  <span>Extracción Insesgada</span>
+                  <span>MATLAB: FIGURA 3 (main_simulacion_tema08.m)</span>
+                  <span>Matriz 2D y Diagonales Toeplitz</span>
                 </div>
                 <div class="code-snippet-body">
-                  <pre><code>% Matriz completa de correlacion
-R_mat = (X' * X) / M;
-% Promedio a lo largo de diagonales con retardo fijo tau = k * dt
-for k = 1:length(lags_idx)
-    R_tau(k) = mean(diag(R_mat, lags_idx(k)));
-end</code></pre>
+                  <pre><code><span class="m-comment">% FIGURA 3: Matriz 2D y Corte Unidimensional WSS</span>
+<span class="m-var">f3</span> = <span class="m-func">figure</span>(<span class="m-str">'Name'</span>, <span class="m-str">'Fig3_Autocorrelacion_2D_1D'</span>, <span class="m-str">'Color'</span>, <span class="m-str">'w'</span>);
+<span class="m-func">subplot</span>(<span class="m-num">1</span>, <span class="m-num">2</span>, <span class="m-num">1</span>);
+<span class="m-func">imagesc</span>(<span class="m-var">t_ms</span>, <span class="m-var">t_ms</span>, <span class="m-var">R_mat_10000</span>);
+<span class="m-func">axis</span> <span class="m-str">xy</span>; <span class="m-func">axis</span> <span class="m-str">square</span>; <span class="m-func">colormap</span>(<span class="m-func">jet</span>); <span class="m-func">colorbar</span>;
+<span class="m-func">title</span>(<span class="m-str">'Matriz R_X(t_1, t_2) [M = 10,000]'</span>);
+
+<span class="m-func">subplot</span>(<span class="m-num">1</span>, <span class="m-num">2</span>, <span class="m-num">2</span>); <span class="m-func">hold</span> <span class="m-keyword">on</span>; <span class="m-func">grid</span> <span class="m-keyword">on</span>;
+<span class="m-var">lags_ms</span> = <span class="m-var">lags_tau</span> * <span class="m-num">1e3</span>;
+<span class="m-func">plot</span>(<span class="m-var">lags_ms</span>, <span class="m-var">R_teorica</span>, <span class="m-str">'k-'</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">2.0</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'Teoría: (A^2/2) cos(2\\pi f_0 \\tau)'</span>);
+<span class="m-func">plot</span>(<span class="m-var">lags_ms</span>, <span class="m-var">R_tau_100</span>,   <span class="m-str">':'</span>,  <span class="m-str">'LineWidth'</span>, <span class="m-num">1.2</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'Sim. M = 100'</span>);
+<span class="m-func">plot</span>(<span class="m-var">lags_ms</span>, <span class="m-var">R_tau_1000</span>,  <span class="m-str">'--'</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">1.3</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'Sim. M = 1,000'</span>);
+<span class="m-func">plot</span>(<span class="m-var">lags_ms</span>, <span class="m-var">R_tau_10000</span>, <span class="m-str">'-'</span>,  <span class="m-str">'LineWidth'</span>, <span class="m-num">1.4</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'Sim. M = 10,000'</span>);
+<span class="m-func">xlabel</span>(<span class="m-str">'Retardo temporal \\tau [ms]'</span>); <span class="m-func">ylabel</span>(<span class="m-str">'R_X(\\tau) [W]'</span>);</code></pre>
                 </div>
               </div>
             </div>
@@ -930,7 +958,8 @@ end</code></pre>
                 <div id="plotly-exp3-2d" class="plotly-container" style="width: 100%; height: 100%; display: none;">
                 </div>
                 <img src="figures/fig3_autocorrelacion_conjunto_2d_1d.png" class="matlab-img-view"
-                  alt="Figura 3 MATLAB">
+                  alt="Figura 3: Matriz de Autocorrelación 2D y Corte Unidimensional WSS">
+                <span class="matlab-zoom-hint">🔍 Clic para ampliar a 300 DPI</span>
               </div>
             </div>
           </div>
@@ -995,17 +1024,19 @@ end</code></pre>
 
               <div class="code-snippet-box">
                 <div class="code-snippet-header">
-                  <span>MATLAB: estimar_estadisticas_temporales.m</span>
-                  <span>1 Sola Trayectoria (T = 1.0 s)</span>
+                  <span>MATLAB: FIGURA 4 (main_simulacion_tema08.m)</span>
+                  <span>Verificación Ergodicidad (xcorr)</span>
                 </div>
                 <div class="code-snippet-body">
-                  <pre><code>function [mu_temp, var_temp, R_temp, lags_temp] = estimar_estadisticas_temporales(x_single, t_single, max_lag_sec)
-    mu_temp = mean(x_single);
-    var_temp = var(x_single, 1);
-    max_lag_samples = round(max_lag_sec / dt);
-    [R_raw, lags_idx] = xcorr(x_single, max_lag_samples, 'unbiased');
-    R_temp = R_raw; lags_temp = lags_idx * dt;
-end</code></pre>
+                  <pre><code><span class="m-comment">% FIGURA 4: Comprobacion de Ergodicidad (Conjunto vs Temporal)</span>
+<span class="m-var">f4</span> = <span class="m-func">figure</span>(<span class="m-str">'Name'</span>, <span class="m-str">'Fig4_Ergodicidad_Conjunto_Temporal'</span>, <span class="m-str">'Color'</span>, <span class="m-str">'w'</span>);
+<span class="m-func">hold</span> <span class="m-keyword">on</span>; <span class="m-func">grid</span> <span class="m-keyword">on</span>; <span class="m-func">box</span> <span class="m-keyword">on</span>;
+<span class="m-func">plot</span>(<span class="m-var">tau_comp</span> * <span class="m-num">1e3</span>, <span class="m-var">R_teo_comp</span>, <span class="m-str">'k-'</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">2.2</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'R_X(\\tau) Teórica'</span>);
+<span class="m-func">plot</span>(<span class="m-var">tau_comp</span> * <span class="m-num">1e3</span>, <span class="m-var">R_ens_comp</span>, <span class="m-str">'b--'</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">1.8</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'Conjunto \\hat{R}_{ens} [M=10,000]'</span>);
+<span class="m-func">plot</span>(<span class="m-var">lags_temp</span>(<span class="m-var">lags_temp</span> >= <span class="m-num">0</span>) * <span class="m-num">1e3</span>, <span class="m-var">R_temp</span>(<span class="m-var">lags_temp</span> >= <span class="m-num">0</span>), <span class="m-str">'r-.'</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">1.5</span>, ...
+     <span class="m-str">'DisplayName'</span>, <span class="m-str">'Temporal \\mathcal{R}_x(\\tau) [1 traza, T = 1.0 s]'</span>);
+<span class="m-func">xlabel</span>(<span class="m-str">'Retardo temporal \\tau [ms]'</span>); <span class="m-func">ylabel</span>(<span class="m-str">'Autocorrelación [W]'</span>);
+<span class="m-func">title</span>(<span class="m-str">'\\hat{R}_{ens}(\\tau) \\equiv \\mathcal{R}_x(\\tau) \\equiv R_X(\\tau)'</span>);</code></pre>
                 </div>
               </div>
             </div>
@@ -1022,7 +1053,8 @@ end</code></pre>
               <div class="chart-canvas-area">
                 <canvas id="chart-exp4"></canvas>
                 <img src="figures/fig4_ergodicidad_conjunto_vs_temporal.png" class="matlab-img-view"
-                  alt="Figura 4 MATLAB">
+                  alt="Figura 4: Comprobación de Ergodicidad (Conjunto vs Temporal)">
+                <span class="matlab-zoom-hint">🔍 Clic para ampliar a 300 DPI</span>
               </div>
             </div>
           </div>
@@ -1086,31 +1118,44 @@ end</code></pre>
 
               <div class="code-snippet-box">
                 <div class="code-snippet-header">
-                  <span>MATLAB: simular_contraejemplo.m</span>
-                  <span>Rampa y Caminata Aleatoria</span>
+                  <span>MATLAB: FIGURA 5 (main_simulacion_tema08.m)</span>
+                  <span>4 Subplots Contraejemplo WSS</span>
                 </div>
                 <div class="code-snippet-body">
-                  <pre><code>envolvente = 1 + alpha_ramp * t;
-Y = (A .* repmat(envolvente, M, 1)) .* cos(2*pi*f0*t + Theta);
-var_Y = var(Y, 0, 1); % Varianza temporal cuadratica
-% Caminata aleatoria (ruido de fase acumulado)
-W = cumsum(0.1 * randn(M, N), 2);</code></pre>
+                  <pre><code><span class="m-comment">% FIGURA 5: Contraejemplo No Estacionario (Falla de WSS)</span>
+<span class="m-var">f5</span> = <span class="m-func">figure</span>(<span class="m-str">'Name'</span>, <span class="m-str">'Fig5_Contraejemplo_No_Estacionario'</span>, <span class="m-str">'Color'</span>, <span class="m-str">'w'</span>);
+<span class="m-func">subplot</span>(<span class="m-num">2</span>, <span class="m-num">2</span>, <span class="m-num">1</span>); <span class="m-func">plot</span>(<span class="m-var">t_ms</span>, <span class="m-var">Y</span>(<span class="m-num">1</span>:<span class="m-num">3</span>, :), <span class="m-str">'LineWidth'</span>, <span class="m-num">1.2</span>); <span class="m-comment">% Y(t) con envolvente</span>
+<span class="m-func">subplot</span>(<span class="m-num">2</span>, <span class="m-num">2</span>, <span class="m-num">2</span>); <span class="m-func">hold</span> <span class="m-keyword">on</span>; <span class="m-comment">% Varianza temporal cuadratica</span>
+<span class="m-func">plot</span>(<span class="m-var">t_ms</span>, <span class="m-var">var_Y_teorica</span>, <span class="m-str">'k-'</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">1.8</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'Teorica: (A^2/2)(1+\alpha t)^2'</span>);
+<span class="m-func">plot</span>(<span class="m-var">t_ms</span>, <span class="m-var">var_Y</span>, <span class="m-str">'r--'</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">1.5</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'Simulada (M = 10,000)'</span>);
+<span class="m-func">subplot</span>(<span class="m-num">2</span>, <span class="m-num">2</span>, <span class="m-num">3</span>); <span class="m-func">imagesc</span>(<span class="m-var">t_ms</span>, <span class="m-var">t_ms</span>, <span class="m-var">R_Y_mat</span>); <span class="m-func">axis</span> <span class="m-str">xy</span>; <span class="m-func">colormap</span>(<span class="m-func">jet</span>); <span class="m-comment">% 2D</span>
+<span class="m-func">subplot</span>(<span class="m-num">2</span>, <span class="m-num">2</span>, <span class="m-num">4</span>); <span class="m-func">hold</span> <span class="m-keyword">on</span>; <span class="m-comment">% Caminata aleatoria (dispersion)</span>
+<span class="m-func">plot</span>(<span class="m-var">t_ms</span>, <span class="m-var">W</span>(<span class="m-num">1</span>:<span class="m-num">4</span>, :), <span class="m-str">'LineWidth'</span>, <span class="m-num">1.1</span>);
+<span class="m-func">plot</span>(<span class="m-var">t_ms</span>, <span class="m-func">sqrt</span>(<span class="m-var">var_W</span>), <span class="m-str">'k-'</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">2.0</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'\pm \sigma_W(n) \propto \surd n'</span>);
+<span class="m-func">plot</span>(<span class="m-var">t_ms</span>, -<span class="m-func">sqrt</span>(<span class="m-var">var_W</span>), <span class="m-str">'k-'</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">2.0</span>);</code></pre>
                 </div>
               </div>
             </div>
 
-            <!-- Gráfica Interactiva -->
+            <!-- Gráfica Interactiva con Pestañas para los 4 Subplots del Código -->
             <div class="chart-viewer-box">
               <div class="chart-toolbar">
-                <div class="chart-tabs">
-                  <button class="chart-tab-btn chart-tab-interactive active">📊 Gráfico Interactivo (Chart.js)</button>
-                  <button class="chart-tab-btn chart-tab-matlab">📸 MATLAB 300 DPI Original</button>
+                <div class="chart-tabs" id="tabs-exp5">
+                  <button class="chart-tab-btn active" data-exp5-tab="var">📈 1. Varianza Cuadrática</button>
+                  <button class="chart-tab-btn" data-exp5-tab="traces">🌊 2. Trayectorias Y(t)</button>
+                  <button class="chart-tab-btn" data-exp5-tab="matrix">🗺️ 3. Matriz 2D RY</button>
+                  <button class="chart-tab-btn" data-exp5-tab="rw">🎲 4. Caminata Aleatoria</button>
+                  <button class="chart-tab-btn" data-exp5-tab="matlab">📸 MATLAB 300 DPI Original</button>
                 </div>
-                <button class="btn-demo-run">▶ Ejecutar Simulación</button>
+                <button class="btn-demo-run" id="btn-run-exp5">▶ Ejecutar Simulación</button>
               </div>
-              <div class="chart-canvas-area">
-                <canvas id="chart-exp5"></canvas>
-                <img src="figures/fig5_contraejemplo_no_estacionario.png" class="matlab-img-view" alt="Figura 5 MATLAB">
+              <div class="chart-canvas-area" style="position: relative;">
+                <canvas id="chart-exp5-var"></canvas>
+                <canvas id="chart-exp5-traces" style="display: none;"></canvas>
+                <div id="plotly-exp5-matrix" class="plotly-container" style="width: 100%; height: 100%; display: none;"></div>
+                <canvas id="chart-exp5-rw" style="display: none;"></canvas>
+                <img src="figures/fig5_contraejemplo_no_estacionario.png" class="matlab-img-view" alt="Figura 5: Contraejemplo No Estacionario (4 Subplots MATLAB)" style="display: none;">
+                <span class="matlab-zoom-hint">🔍 Clic para ampliar a 300 DPI</span>
               </div>
             </div>
           </div>
@@ -1175,17 +1220,23 @@ W = cumsum(0.1 * randn(M, N), 2);</code></pre>
 
               <div class="code-snippet-box">
                 <div class="code-snippet-header">
-                  <span>MATLAB: Bucle de Convergencia</span>
-                  <span>Escala Logarítmica</span>
+                  <span>MATLAB: FIGURA 6 (main_simulacion_tema08.m)</span>
+                  <span>Convergencia Monte Carlo TLC</span>
                 </div>
                 <div class="code-snippet-body">
-                  <pre><code>M_vector = [50, 100, 200, 500, 1000, 2000, 5000, 10000];
-for idx = 1:length(M_vector)
-    [X_sub, ~] = generar_proceso_sinusoidal(M_vector(idx), t, A, f0, seed);
-    [mu_sub, ~, ~, R_sub] = estimar_estadisticas_conjunto(X_sub, t);
-    mae_mu(idx) = mean(abs(mu_sub));
-    rmse_R(idx) = sqrt(mean((R_sub - R_teorica).^2));
-end</code></pre>
+                  <pre><code><span class="m-comment">% FIGURA 6: Convergencia Monte Carlo y Teorema Limite Central</span>
+<span class="m-var">f6</span> = <span class="m-func">figure</span>(<span class="m-str">'Name'</span>, <span class="m-str">'Fig6_Convergencia_Monte_Carlo'</span>, <span class="m-str">'Color'</span>, <span class="m-str">'w'</span>);
+<span class="m-var">M_vector</span> = [<span class="m-num">50</span>, <span class="m-num">100</span>, <span class="m-num">200</span>, <span class="m-num">500</span>, <span class="m-num">1000</span>, <span class="m-num">2000</span>, <span class="m-num">5000</span>, <span class="m-num">10000</span>];
+<span class="m-keyword">for</span> <span class="m-var">idx_m</span> = <span class="m-num">1</span>:<span class="m-func">length</span>(<span class="m-var">M_vector</span>)
+    <span class="m-var">M_val</span> = <span class="m-var">M_vector</span>(<span class="m-var">idx_m</span>);
+    [<span class="m-var">X_sub</span>, ~] = <span class="m-func">generar_proceso_sinusoidal</span>(<span class="m-var">M_val</span>, <span class="m-var">cfg</span>.<span class="m-var">t</span>, <span class="m-var">cfg</span>.<span class="m-var">A</span>, <span class="m-var">cfg</span>.<span class="m-var">f0</span>, <span class="m-var">cfg</span>.<span class="m-var">seed</span> + <span class="m-var">idx_m</span>*<span class="m-num">7</span>);
+    [<span class="m-var">mu_sub</span>, ~, ~, <span class="m-var">R_tau_sub</span>, ~] = <span class="m-func">estimar_estadisticas_conjunto</span>(<span class="m-var">X_sub</span>, <span class="m-var">cfg</span>.<span class="m-var">t</span>);
+    <span class="m-var">mae_mu_convergencia</span>(<span class="m-var">idx_m</span>) = <span class="m-func">mean</span>(<span class="m-func">abs</span>(<span class="m-var">mu_sub</span>));
+    <span class="m-var">rmse_convergencia</span>(<span class="m-var">idx_m</span>) = <span class="m-func">sqrt</span>(<span class="m-func">mean</span>((<span class="m-var">R_tau_sub</span> - <span class="m-var">R_teorica</span>).^<span class="m-num">2</span>));
+<span class="m-keyword">end</span>
+<span class="m-func">loglog</span>(<span class="m-var">M_vector</span>, <span class="m-var">mae_mu_convergencia</span>, <span class="m-str">'s-'</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">1.6</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'MAE \mu_X(t)'</span>);
+<span class="m-func">loglog</span>(<span class="m-var">M_vector</span>, <span class="m-var">rmse_convergencia</span>, <span class="m-str">'o-'</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">1.6</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'RMSE R_X(\tau)'</span>);
+<span class="m-func">loglog</span>(<span class="m-var">M_vector</span>, <span class="m-var">pendiente_asintotica</span>, <span class="m-str">'k--'</span>, <span class="m-str">'LineWidth'</span>, <span class="m-num">1.4</span>, <span class="m-str">'DisplayName'</span>, <span class="m-str">'O(1/\surd M)'</span>);</code></pre>
                 </div>
               </div>
             </div>
@@ -1201,7 +1252,9 @@ end</code></pre>
               </div>
               <div class="chart-canvas-area">
                 <canvas id="chart-exp6"></canvas>
-                <img src="figures/fig6_convergencia_monte_carlo.png" class="matlab-img-view" alt="Figura 6 MATLAB">
+                <img src="figures/fig6_convergencia_monte_carlo.png" class="matlab-img-view"
+                  alt="Figura 6: Convergencia Monte Carlo y Teorema del Límite Central">
+                <span class="matlab-zoom-hint">🔍 Clic para ampliar a 300 DPI</span>
               </div>
             </div>
           </div>
@@ -1413,6 +1466,23 @@ end</code></pre>
     </div>
     <div id="sidebar-grid" class="sidebar-cards-grid">
       <!-- Se genera dinámicamente con JavaScript -->
+    </div>
+  </div>
+
+  <!-- MODAL LIGHTBOX PARA IMÁGENES MATLAB 300 DPI -->
+  <div id="image-lightbox-modal" class="image-lightbox-modal">
+    <div class="lightbox-content">
+      <div class="lightbox-header">
+        <h4 id="lightbox-title">Visualización de Figura MATLAB (300 DPI Alta Resolución)</h4>
+        <button id="lightbox-close" class="lightbox-close-btn" title="Cerrar (Esc)">✕</button>
+      </div>
+      <div class="lightbox-img-wrapper">
+        <img id="lightbox-image" src="" alt="Figura MATLAB en Alta Resolución">
+      </div>
+      <div class="lightbox-footer">
+        <span class="lightbox-hint">🔍 Renderizado original exportado a 300 DPI mediante <code>exportgraphics(..., 'Resolution', 300)</code></span>
+        <a id="lightbox-download-link" href="" download class="btn-demo-run" style="text-decoration: none; padding: 0.35rem 0.8rem; font-size: 0.78rem;">⬇ Descargar PNG 300 DPI</a>
+      </div>
     </div>
   </div>
 
